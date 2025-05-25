@@ -1,0 +1,5 @@
+{
+  "task_description": "{'component_name': 'Main Container for ElectroMonitor', 'description': 'Primary container for ElectroMonitor implementation: An app designed for EB officers and customers to manage and monitor electricity usage. EB officers can input electricity usage data via a chip, while customers receive notifications about their payable amounts. The app provides detailed electricity usage information to officers and payment notifications to customers.', 'framework': 'react', 'platform': 'web'}",
+  "tasks": {},
+  "next_task_id": 1
+}
