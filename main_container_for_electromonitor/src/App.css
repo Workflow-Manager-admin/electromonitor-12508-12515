@@ -108,3 +108,59 @@ body {
   padding: 12px 24px;
   font-size: 1.1rem;
 }
+
+/* ELECTROMONITOR: modular overrides/additions */
+
+.notification-banner {
+  background: var(--kavia-orange);
+  color: #fff;
+  padding: 16px;
+  text-align: center;
+}
+
+.panel {
+  background: rgba(255,255,255,0.02);
+  border-radius: 8px;
+  padding: 24px;
+  margin-bottom: 32px;
+  box-shadow: 0 1px 4px 0 rgba(50,50,50,0.07);
+}
+
+@media (max-width: 750px) {
+  .container {
+    padding: 0 8px;
+  }
+  .title {
+    font-size: 2.1rem;
+  }
+  .hero {
+    padding-top: 76px;
+    padding-bottom: 32px;
+  }
+  .panel {
+    padding: 12px 6px;
+  }
+  table {
+    font-size: 0.96rem;
+  }
+}
+
+/* Table styles for Officer usage records */
+table {
+  border-radius: 4px;
+  overflow: hidden;
+  background: rgba(255,255,255,0.03);
+}
+th, td {
+  text-align: left;
+  border-bottom: 1px solid var(--border-color);
+}
+
+th {
+  background: rgba(232, 122, 65, 0.09);
+  color: var(--kavia-orange);
+}
+
+tr:last-child td {
+  border-bottom: none;
+}
