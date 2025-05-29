@@ -6,6 +6,11 @@
   --border-color: rgba(255, 255, 255, 0.1);
   --kavia-green: #12C984;
   --kavia-blue: #75BDFB;
+
+  /* Landing/Cover page custom variables (only applied to landing) */
+  --cover-bg: #e0e0e0;
+  --cover-accent: #f5f5f5;
+  --cover-font: #000000;
 }
 
 body {
