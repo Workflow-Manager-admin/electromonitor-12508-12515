@@ -37,21 +37,23 @@ function NotificationBanner({ message, onClose }) {
   );
 }
 
-// ----- Helper: Role Selector -----
+// ----- Helper: Role Selector (Landing page with custom accent/button/typography) -----
 function RoleSelector({ role, setRole }) {
   return (
-    <div style={{ textAlign: 'center', margin: '64px 0 32px' }}>
-      <span className="subtitle" style={{ marginRight: '24px' }}>Select Role:</span>
+    <div className="cover-role-select" style={{ textAlign: 'center', margin: '0 0 32px' }}>
+      <span className="cover-subtitle" style={{ marginRight: '28px' }}>Select Role:</span>
       <button
-        className={'btn' + (role === 'officer' ? ' btn-large' : '')}
+        className={'cover-btn' + (role === 'officer' ? ' btn-large' : '')}
         style={{ marginRight: '16px' }}
         onClick={() => setRole('officer')}
+        type="button"
       >
         EB Officer
       </button>
       <button
-        className={'btn' + (role === 'customer' ? ' btn-large' : '')}
+        className={'cover-btn' + (role === 'customer' ? ' btn-large' : '')}
         onClick={() => setRole('customer')}
+        type="button"
       >
         Customer
       </button>
