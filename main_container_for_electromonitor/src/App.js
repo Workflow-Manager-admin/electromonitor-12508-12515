@@ -255,9 +255,20 @@ function App() {
   }
 
   // Officer & Customer views
+  let isCover = !role;
   let mainView = null;
-  if (!role) {
-    mainView = <RoleSelector role={role} setRole={setRole} />;
+  if (isCover) {
+    mainView = (
+      <div className="cover-container">
+        <div className="cover-welcome-message">
+          Welcome to ElectroMonitor!<br />
+          <span style={{fontWeight: 400, fontSize: '1.15rem'}}>
+              Effortless electric usage management for officers & customers 🚀
+          </span>
+        </div>
+        <RoleSelector role={role} setRole={setRole} />
+      </div>
+    );
   } else if (role === 'officer') {
     mainView = (
       <div>
@@ -276,18 +287,19 @@ function App() {
     );
   }
 
+  // App root applies cover background for landing, default otherwise
   return (
-    <div className="app">
+    <div className={"app" + (isCover ? " cover-bg" : "")} style={isCover ? {color: 'var(--cover-font)'} : {}}>
       {/* Navbar */}
-      <nav className="navbar">
+      <nav className="navbar" style={isCover ? {background: 'var(--cover-accent)', color: 'var(--cover-font)', boxShadow:'0 1px 6px #bbb'} : {}}>
         <div className="container">
           <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
-            <div className="logo">
-              <span className="logo-symbol">*</span> ElectroMonitor
+            <div className="logo" style={isCover ? {color: 'var(--cover-font)'} : {}}>
+              <span className="logo-symbol" style={isCover ? {color:'var(--cover-font)'} : {}}>*</span> ElectroMonitor
               <span style={{
                 fontWeight: 400,
                 fontSize: '1rem',
-                color: 'var(--text-secondary)',
+                color: isCover ? 'var(--cover-font)' : 'var(--text-secondary)',
                 marginLeft: '8px',
                 letterSpacing: 1
               }}>
@@ -295,7 +307,7 @@ function App() {
               </span>
             </div>
             {role &&
-              <button className="btn" onClick={() => setRole('')}>
+              <button className="btn" onClick={() => setRole('')} style={isCover ? {background:'var(--cover-accent)', color: 'var(--cover-font)', border:'1px solid #bbb'} : {}}>
                 Switch Role
               </button>
             }
@@ -304,9 +316,12 @@ function App() {
       </nav>
       <NotificationBanner message={notification} onClose={handleCloseNotification} />
       <main>
-        <div className="container" style={{ paddingTop: 100, paddingBottom: 48 }}>
-          {mainView}
-        </div>
+        {isCover ?
+          <div>{mainView}</div> :
+          <div className="container" style={{ paddingTop: 100, paddingBottom: 48 }}>
+            {mainView}
+          </div>
+        }
       </main>
     </div>
   );
