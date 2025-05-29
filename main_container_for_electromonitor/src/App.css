@@ -22,6 +22,69 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* COVER/LANDING PAGE ONLY */
+.cover-bg {
+  background: var(--cover-bg) !important;
+}
+
+.cover-container {
+  /* Center content, ensure full viewport coverage and padding */
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  padding-top: 112px;
+  background: var(--cover-bg);
+}
+
+.cover-welcome-message {
+  margin-bottom: 32px;
+  padding: 24px 30px 18px 30px;
+  background: var(--cover-accent);
+  border-radius: 16px;
+  color: var(--cover-font);
+  font-size: 2.5rem;
+  font-weight: 700;
+  text-align: center;
+  box-shadow: 0 3px 15px rgba(160,160,160,0.09);
+  letter-spacing: 0.02em;
+  line-height: 1.18;
+}
+.cover-role-select {
+  margin-bottom: 32px;
+}
+.cover-subtitle {
+  color: var(--cover-font) !important;
+  font-size: 1.31rem !important;
+  font-weight: 500;
+}
+.cover-btn {
+  background: var(--cover-accent) !important;
+  color: var(--cover-font) !important;
+  border: 1px solid #bbb;
+  font-size: 1.22rem;
+  font-weight: 600;
+  padding: 12px 28px;
+  margin: 0 12px;
+  border-radius: 4px;
+  transition: background 0.16s;
+}
+.cover-btn:hover, .cover-btn:focus {
+  background: #eaeaea !important;
+}
+/* Increase role selector margin for welcome effect */
+.cover-role-select {
+  margin-top: 16px;
+}
+
+/* Responsive for smaller screens */
+@media (max-width: 750px) {
+  .cover-welcome-message { font-size: 1.45rem; padding: 14px 10px 8px 10px; }
+  .cover-container { padding-top: 68px;}
+  .cover-btn { font-size: 1.01rem; padding: 10px 8vw;}
+}
+
 .app {
   min-height: 100vh;
   display: flex;
