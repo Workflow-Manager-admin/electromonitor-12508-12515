@@ -255,7 +255,45 @@ function App() {
   // Officer & Customer views
   let mainView = null;
   if (!role) {
-    mainView = <RoleSelector role={role} setRole={setRole} />;
+    // Welcome page, visually centered, modern, clean, and themed
+    mainView = (
+      <div style={{
+        minHeight: '62vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        flexDirection: 'column',
+        padding: '64px 0',
+      }}>
+        <div
+          className="panel"
+          style={{
+            background: 'rgba(202,240,254,0.09)',
+            maxWidth: 480,
+            margin: 'auto',
+            textAlign: 'center',
+            borderRadius: 14,
+            boxShadow: '0 2px 10px 0 rgba(0,0,0,0.05)'
+          }}
+        >
+          <h1 className="title" style={{ color: '#caf0fe', marginBottom: 6, letterSpacing: 0.5 }}>Welcome to ElectroMonitor</h1>
+          <div className="subtitle" style={{ color: '#919191', fontWeight: 500 }}>Track & Manage Electricity Smartly</div>
+          <p className="description" style={{
+            margin: '12px 0 32px',
+            fontSize: '1.2rem',
+          }}>
+            Empowering <span style={{ color: '#000000', fontWeight: 600 }}>EB Officers</span> and <span style={{ color: '#000000', fontWeight: 600 }}>Consumers</span>.<br />
+            Monitor usage, record chip data, and stay updated with your electricity bills — all with a clean, modern interface.
+          </p>
+          <RoleSelector role={role} setRole={setRole} />
+          <img
+            src="logo.svg"
+            alt="ElectroMonitor Icon"
+            style={{ width: 80, margin: '24px auto 0', filter: 'drop-shadow(0 2px 8px #caf0fe55)', opacity: 0.89 }}
+          />
+        </div>
+      </div>
+    );
   } else if (role === 'officer') {
     mainView = (
       <div>
