@@ -82,7 +82,7 @@ function OfficerUsageEntry({ customers, addUsage }) {
   }
 
   return (
-    <div style={{ marginBottom: '32px', background: 'rgba(255,255,255,0.03)', borderRadius: 8, padding: 24 }}>
+    <div style={{ marginBottom: '32px', background: '#fafafa', borderRadius: 8, padding: 24, border: '1px solid #e0e0e0' }}>
       <div className="subtitle" style={{ marginBottom: 12 }}>Usage Data Entry</div>
       <form style={{ display: 'flex', gap: 16, alignItems: 'flex-end', flexWrap: 'wrap' }} onSubmit={handleAddUsage}>
         <div>
