@@ -1,9 +1,9 @@
 :root {
-  --kavia-orange: #f2f2f2;           /* orange replaced by light grey */
-  --kavia-dark: #232323;             /* dark grey background */
+  --kavia-orange: #e0e0e0;           /* use lighter grey for main background */
+  --kavia-dark: #e0e0e0;             /* redefine dark as light grey */
   --text-color: #000000;             /* font color = black */
-  --text-secondary: #333333;         /* darkish for secondary, to contrast with light bg */
-  --border-color: #444444;
+  --text-secondary: #353535;         /* slightly dark grey secondary text for contrast */
+  --border-color: #bcbcbc;
   --kavia-green: #12C984;
   --kavia-blue: #75BDFB;
 }
@@ -11,8 +11,8 @@
 body {
   margin: 0;
   font-family: 'Inter', 'Roboto', 'Helvetica', 'Arial', sans-serif;
-  background-color: var(--kavia-dark);
-  color: var(--text-color);
+  background-color: #e0e0e0 !important;
+  color: #000000 !important;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
