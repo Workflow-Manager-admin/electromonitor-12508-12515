@@ -274,26 +274,27 @@ function App() {
         justifyContent: 'center',
         flexDirection: 'column',
         padding: '64px 0',
+        background: 'transparent'
       }}>
         <div
           className="panel"
           style={{
-            background: '#232323',
+            background: '#f5f5f5',
             maxWidth: 480,
             margin: 'auto',
             textAlign: 'center',
             borderRadius: 14,
-            boxShadow: '0 2px 10px 0 rgba(0,0,0,0.12)',
+            boxShadow: '0 2px 10px 0 rgba(100,100,100,0.10)',
             color: '#000000',
-            border: '1px solid #f2f2f2'
+            border: '1px solid #e0e0e0'
           }}
         >
-          <h1 className="title" style={{ color: '#f2f2f2', marginBottom: 6, letterSpacing: 0.5 }}>Welcome to ElectroMonitor</h1>
+          <h1 className="title" style={{ color: '#000000', marginBottom: 6, letterSpacing: 0.5 }}>Welcome to ElectroMonitor</h1>
           <div className="subtitle" style={{ color: '#000000', fontWeight: 500 }}>Track & Manage Electricity Smartly</div>
           <p className="description" style={{
             margin: '12px 0 32px',
             fontSize: '1.2rem',
-            color: '#000000'
+            color: '#353535'
           }}>
             Empowering <span style={{ color: '#000000', fontWeight: 600 }}>EB Officers</span> and <span style={{ color: '#000000', fontWeight: 600 }}>Consumers</span>.<br />
             Monitor usage, record chip data, and stay updated with your electricity bills — all with a clean, modern interface.
@@ -302,7 +303,7 @@ function App() {
           <img
             src="logo.svg"
             alt="ElectroMonitor Icon"
-            style={{ width: 80, margin: '24px auto 0', filter: 'drop-shadow(0 2px 8px #f2f2f288)', opacity: 0.96 }}
+            style={{ width: 80, margin: '24px auto 0', filter: 'drop-shadow(0 2px 8px #bdbdbd88)', opacity: 0.96 }}
           />
         </div>
       </div>
