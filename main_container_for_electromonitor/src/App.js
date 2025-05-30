@@ -133,11 +133,11 @@ function OfficerUsageTable({ usageRecords, customers }) {
         borderCollapse: 'collapse',
         marginTop: 12,
         fontSize: '1rem',
-        background: '#262626'
+        background: '#fafafa'
       }}>
         <thead>
           <tr style={{
-            background: '#383838',
+            background: '#ededed',
             color: '#000000'
           }}>
             <th style={{ padding: 8, borderBottom: '1px solid var(--border-color)' }}>Customer</th>
@@ -184,9 +184,9 @@ function CustomerDashboard({ customer, usageRecord }) {
             <>
               <strong>Latest Usage:</strong> {usageRecord.usage} kWh<br />
               <strong>Payable Amount:</strong> <span style={{
-                color: '#f2f2f2',
+                color: '#000000',
                 fontWeight: 700,
-                background: '#232323',
+                background: '#e0e0e0',
                 padding: '2px 8px',
                 borderRadius: 4
               }}>₹{usageRecord.payable}</span><br />
