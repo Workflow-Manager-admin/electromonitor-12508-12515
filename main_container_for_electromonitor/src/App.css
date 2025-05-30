@@ -8,11 +8,11 @@
   --kavia-blue: #75BDFB;
 }
 
-@import url('https://fonts.googleapis.com/css?family=Roboto:400,500,600,700&display=swap');
+@import url('https://fonts.googleapis.com/css?family=Lobster&display=swap');
 
 body {
   margin: 0;
-  font-family: 'Roboto', 'Open Sans', 'Helvetica Neue', Arial, sans-serif !important;
+  font-family: 'Lobster', 'Open Sans', 'Helvetica Neue', Arial, sans-serif !important;
   background-color: #e0e0e0 !important;
   color: #000000 !important;
   -webkit-font-smoothing: antialiased;
