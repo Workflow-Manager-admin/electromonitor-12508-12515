@@ -300,11 +300,6 @@ function App() {
             Monitor usage, record chip data, and stay updated with your electricity bills — all with a clean, modern interface.
           </p>
           <RoleSelector role={role} setRole={setRole} />
-          <img
-            src="logo.svg"
-            alt="ElectroMonitor Icon"
-            style={{ width: 80, margin: '24px auto 0', filter: 'drop-shadow(0 2px 8px #bdbdbd88)', opacity: 0.96 }}
-          />
         </div>
       </div>
     );
