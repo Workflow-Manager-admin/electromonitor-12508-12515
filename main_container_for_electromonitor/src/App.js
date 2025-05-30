@@ -133,10 +133,13 @@ function OfficerUsageTable({ usageRecords, customers }) {
         borderCollapse: 'collapse',
         marginTop: 12,
         fontSize: '1rem',
-        background: 'rgba(255,255,255,0.01)'
+        background: '#262626'
       }}>
         <thead>
-          <tr style={{ background: 'var(--kavia-dark)', color: 'var(--kavia-orange)' }}>
+          <tr style={{
+            background: '#383838',
+            color: '#000000'
+          }}>
             <th style={{ padding: 8, borderBottom: '1px solid var(--border-color)' }}>Customer</th>
             <th style={{ padding: 8, borderBottom: '1px solid var(--border-color)' }}>Chip ID</th>
             <th style={{ padding: 8, borderBottom: '1px solid var(--border-color)' }}>Latest Usage (kWh)</th>
@@ -180,7 +183,13 @@ function CustomerDashboard({ customer, usageRecord }) {
           ? (
             <>
               <strong>Latest Usage:</strong> {usageRecord.usage} kWh<br />
-              <strong>Payable Amount:</strong> <span style={{ color: 'var(--kavia-orange)', fontWeight: 700 }}>₹{usageRecord.payable}</span><br />
+              <strong>Payable Amount:</strong> <span style={{
+                color: '#f2f2f2',
+                fontWeight: 700,
+                background: '#232323',
+                padding: '2px 8px',
+                borderRadius: 4
+              }}>₹{usageRecord.payable}</span><br />
               <span style={{ color: 'var(--text-secondary)', fontSize: '0.96em' }}>
                 <strong>Last Updated:</strong> {usageRecord.updatedAt}
               </span>
