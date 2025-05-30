@@ -5,13 +5,13 @@ import './App.css';
  * ELECTROMONITOR MAIN CONTAINER (Role-based UI for EB Officers & Customers)
  */
 
-// ----- Helper: Notification Banner -----
+/* --- Helper: Notification Banner --- */
 function NotificationBanner({ message, onClose }) {
   if (!message) return null;
   return (
     <div style={{
       background: 'var(--kavia-orange)',
-      color: '#fff',
+      color: '#000000',
       padding: '16px',
       textAlign: 'center',
       position: 'fixed',
@@ -19,6 +19,7 @@ function NotificationBanner({ message, onClose }) {
       left: 0,
       width: '100%',
       zIndex: 1000,
+      borderBottom: '2px solid #bbbbbb'
     }}>
       <span>{message}</span>
       <button
@@ -26,9 +27,9 @@ function NotificationBanner({ message, onClose }) {
         onClick={onClose}
         style={{
           marginLeft: 24,
-          background: 'rgba(0,0,0,0.07)',
-          color: '#fff',
-          border: '1px solid #fff'
+          background: '#f2f2f2',
+          color: '#000000',
+          border: '1px solid #232323'
         }}
       >
         Close
@@ -117,7 +118,7 @@ function OfficerUsageEntry({ customers, addUsage }) {
         </div>
         <button className="btn" type="submit">Add Usage</button>
       </form>
-      {error && <div style={{ color: '#e87a41', marginTop: 12 }}>{error}</div>}
+      {error && <div style={{ color: '#000000', marginTop: 12 }}>{error}</div>}
     </div>
   );
 }
