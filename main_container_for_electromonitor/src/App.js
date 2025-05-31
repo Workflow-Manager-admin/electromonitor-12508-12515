@@ -531,7 +531,48 @@ function App() {
           </div>
         </div>
         <CustomerSelector customers={customers} customerId={selectedCustomerId} setCustomerId={setSelectedCustomerId} />
+
+        {/* Customer: Late Payment Section */}
+        <CustomerLatePaymentCard
+          usageRecord={usage}
+          onMarkPaid={() => markPaymentDone(selectedCustomerId)}
+        />
+
         <CustomerDashboard customer={customer} usageRecord={usage} />
+        {/* Prominent, visual reminder for late payments */}
+        {reminderMessage && (
+          <div style={{
+            marginTop: 20,
+            background: "#e84545",
+            color: "#fff",
+            padding: "20px 18px",
+            borderRadius: 12,
+            fontWeight: 600,
+            fontSize: "1.12rem",
+            boxShadow: "0 2px 12px #91919140",
+            animation: "blinkme 0.8s linear infinite alternate"
+          }}>
+            {reminderMessage}
+            {usage && usage.paymentStatus !== 'paid' && (
+              <>
+                <button
+                  className="btn"
+                  style={{
+                    marginLeft: 18,
+                    background: '#caf0fe',
+                    color: '#000',
+                    fontWeight: 700,
+                    border: '2px solid #fff',
+                    boxShadow: 'none',
+                  }}
+                  onClick={() => markPaymentDone(selectedCustomerId)}
+                >
+                  Mark as Paid
+                </button>
+              </>
+            )}
+          </div>
+        )}
       </>
     );
   }
