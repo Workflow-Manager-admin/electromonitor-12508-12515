@@ -343,6 +343,56 @@ function App() {
   const [notification, setNotification] = useState('');
   const [selectedCustomerId, setSelectedCustomerId] = useState(customers[0].id);
 
+  // Reminders for customer late payment
+  const [reminderMessage, setReminderMessage] = useState('');
+  const reminderTimerRef = useRef(null);
+
+  // Effect: Handle customer reminders for late payment
+  useEffect(() => {
+    if (!role || role !== 'customer') {
+      setReminderMessage('');
+      if (reminderTimerRef.current) clearInterval(reminderTimerRef.current);
+      return;
+    }
+    const usage = usageRecords.find(r => r.customerId === selectedCustomerId);
+    if (
+      usage &&
+      usage.paymentStatus !== 'paid' &&
+      isLatePayment(usage)
+    ) {
+      setReminderMessage(
+        `⚠️ Late Payment Reminder: You have an overdue amount of ₹${usage.payable}. Please pay immediately!`
+      );
+      // Repeated reminders
+      if (reminderTimerRef.current) clearInterval(reminderTimerRef.current);
+      reminderTimerRef.current = setInterval(() => {
+        setReminderMessage(
+          `⚠️ Late Payment Reminder: You have an overdue amount of ₹${usage.payable}. Please pay immediately!`
+        );
+      }, LATE_PAYMENT_REMINDER_INTERVAL);
+    } else if (
+      usage &&
+      usage.paymentStatus !== 'paid' &&
+      isPaymentDueSoon(usage)
+    ) {
+      setReminderMessage(
+        `⏰ Payment Due Soon: ₹${usage.payable} is due by ${addDays(
+          usage.updatedAt,
+          LATE_PAYMENT_PERIOD_DAYS
+        ).toLocaleDateString('en-IN')} (${LATE_PAYMENT_PERIOD_DAYS} days after usage update)`
+      );
+      if (reminderTimerRef.current) clearInterval(reminderTimerRef.current);
+    } else {
+      setReminderMessage('');
+      if (reminderTimerRef.current) clearInterval(reminderTimerRef.current);
+    }
+    // Cleanup on unmount/role switch
+    return () => {
+      if (reminderTimerRef.current) clearInterval(reminderTimerRef.current);
+    };
+    // eslint-disable-next-line
+  }, [role, selectedCustomerId, usageRecords]);
+
   // Handler: Officer adds usage for a customer
   // PUBLIC_INTERFACE
   function addUsage(customerId, usage, chipId) {
