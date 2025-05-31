@@ -1,18 +1,19 @@
 :root {
   --kavia-orange: #E87A41;
-  --kavia-dark: #1A1A1A;
-  --text-color: #ffffff;
-  --text-secondary: rgba(255, 255, 255, 0.7);
-  --border-color: rgba(255, 255, 255, 0.1);
+  --kavia-dark: #f0f0f0;
+  --text-color: #000000;
+  --text-secondary: #333333;
+  --border-color: #dddddd;
   --kavia-green: #12C984;
   --kavia-blue: #75BDFB;
+  --global-font-family: 'Lucida Handwritten', cursive, sans-serif;
 }
 
 body {
   margin: 0;
-  font-family: 'Inter', 'Roboto', 'Helvetica', 'Arial', sans-serif;
-  background-color: var(--kavia-dark);
-  color: var(--text-color);
+  font-family: inherit;
+  background-color: inherit;
+  color: inherit;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
