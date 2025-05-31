@@ -687,12 +687,18 @@ function App() {
   );
 }
 
-// PUBLIC_INTERFACE
+/**
+ * PUBLIC_INTERFACE
+ * Render the "Late Payment" card for customers, bold & with visual attention for late.
+ * Updates: navy border, maroon text, bold entries, warning icon for late.
+ */
 function CustomerLatePaymentCard({ usageRecord, onMarkPaid }) {
   if (!usageRecord) return null;
   const dueDate = usageRecord
     ? addDays(usageRecord.updatedAt, LATE_PAYMENT_PERIOD_DAYS)
     : null;
+
+  // Fully paid card
   if (usageRecord.paymentStatus === 'paid')
     return (
       <div className="panel"
@@ -700,43 +706,81 @@ function CustomerLatePaymentCard({ usageRecord, onMarkPaid }) {
           marginTop: 18,
           background: "#12C98422",
           color: "#000",
+          border: "2.5px solid #12C984",
           borderLeft: "8px solid #12C984",
-          fontWeight: 600,
-          fontSize: "1.13em",
-          boxShadow: "0 1px 4px #caf0fe77"
+          fontWeight: 700,
+          fontSize: "1.19em",
+          boxShadow: "0 2px 7px #caf0fe55",
         }}
       >
         ✅ Payment Completed.<br />
         Thank you for your timely payment!
       </div>
     );
+
+  // LATE payment version
   if (isLatePayment(usageRecord))
     return (
-      <div className="panel"
+      <div className="panel late-payment-card"
         style={{
-          marginTop: 14,
-          background: "#caf0fe",
-          borderLeft: "8px solid #e84545",
-          fontWeight: 600,
-          color: "#000",
-          boxShadow: "0 1px 4px #91919144"
+          marginTop: 16,
+          background: "#f9fbfd",
+          border: "3px solid #001f54", // Navy border
+          borderLeft: "10px solid #800000", // Maroon highlight
+          fontWeight: 900,
+          color: "#001f54",
+          boxShadow: "0 2px 13px #001f5415",
+          fontSize: "1.04em"
         }}>
-        <span style={{ fontSize: "1.09em", color: "#e84545", fontWeight: 800 }}>⚠️ Late Payment!</span> <br />
-        <span>
-          You have an overdue amount of <span style={{color:'#000', fontSize:'1.24em', fontWeight: 700}}>₹{usageRecord.payable}</span>.
-          <br/>It was due on <b>{dueDate && dueDate.toLocaleDateString('en-IN')}</b>.
-          <br/>
-          <span style={{ fontSize: "0.98em", color: "#000" }}>
-           Overdue duration: <b>{latePaymentOverdueDays(usageRecord)}</b> day(s).
-          </span>
+        <span style={{
+          fontSize: "1.23em",
+          color: "#800000",
+          fontWeight: 900,
+          letterSpacing: 0.01,
+          display:'inline-flex',
+          alignItems:'center'
+        }}>
+          <span role="img" aria-label="Warning" style={{marginRight:6, fontSize:"1.09em"}}>⚠️</span>
+          Late Payment!
         </span>
+        <br />
+        <div style={{
+          marginTop: 10,
+          color: "#800000",
+          fontWeight: 900,
+          letterSpacing: 0.01,
+          fontSize: "1.18em",
+          display: "flex",
+          flexDirection: "column",
+          gap: "5px"
+        }}>
+          <div>
+            <span style={{
+              marginRight: 6,
+              verticalAlign:'middle'
+            }}>
+              ⚠️
+            </span>
+            Amount overdue: <span style={{color:'#800000', fontWeight:900, fontSize:'1.23em'}}>₹{usageRecord.payable}</span>
+          </div>
+          <div>
+            <span style={{marginRight:4}}>⚠️</span>
+            Due date: <span style={{fontWeight:900}}>{dueDate && dueDate.toLocaleDateString('en-IN')}</span>
+          </div>
+          <div>
+            <span style={{marginRight:4}}>⚠️</span>
+            Overdue: <b>{latePaymentOverdueDays(usageRecord)}</b> day(s)
+          </div>
+        </div>
         <br />
         <button className="btn"
           style={{
-            background: '#e84545',
+            background: '#800000',
             color: '#fff',
             marginTop: 10,
-            fontWeight: 600
+            fontWeight: 700,
+            border: "1.6px solid #001f54",
+            boxShadow: "0 0 7px #80000025"
           }}
           onClick={onMarkPaid}
         >
@@ -744,30 +788,37 @@ function CustomerLatePaymentCard({ usageRecord, onMarkPaid }) {
         </button>
       </div>
     );
-  // Payment is not yet late, due soon
+
+  // Payment due soon, not yet late
   return (
     <div className="panel"
       style={{
-        marginTop: 14,
-        background: "#caf0fe",
+        marginTop: 16,
+        background: "#f7fbff",
+        border: "3px solid #001f54", // Navy blue
         borderLeft: "8px solid #919191",
-        fontWeight: 600,
-        color: "#000",
-        boxShadow: "0 1px 4px #caf0fe44"
+        fontWeight: 700,
+        color: "#001f54",
+        boxShadow: "0 2px 13px #001f5412"
       }}>
-      <span style={{ fontSize: "1.08em", color: "#919191", fontWeight: 800 }}>Payment Due Soon</span> <br />
-      <span>
-        Amount Due: <span style={{fontWeight: 700}}>₹{usageRecord.payable}</span><br />
+      <span style={{
+        fontSize: "1.08em",
+        color: "#001f54",
+        fontWeight: 900
+      }}>Payment Due Soon</span>
+      <br />
+      <span style={{color:'#222', fontWeight:700, fontSize:'1.09em'}}>
+        Amount Due: <span style={{fontWeight: 900, color:'#001f54'}}>₹{usageRecord.payable}</span><br />
         Due by: <b>{dueDate && dueDate.toLocaleDateString('en-IN')}</b>
       </span>
       <br />
       <button className="btn"
         style={{
           background: '#caf0fe',
-          color: '#000',
+          color: '#001f54',
           marginTop: 10,
-          border: '1px solid #919191',
-          fontWeight: 600
+          border: '2px solid #001f54',
+          fontWeight: 800
         }}
         onClick={onMarkPaid}
       >
