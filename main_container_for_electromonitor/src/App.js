@@ -198,11 +198,12 @@ function OfficerUsageTable({ usageRecords, customers }) {
 }
 
 /**
- * Enhanced CustomerPaymentSection: UI for payment method/status.
+ * PUBLIC_INTERFACE
+ * Enhanced CustomerPaymentSection: UI for payment method/status and payment logic.
  * Lets user choose payment method: 
  *  - Select Online/Offline (radio or select)
  *  - If Online, select detailed method
- * Handles "Mark Paid" operation flows.
+ * Handles "Mark Paid" operation flows. Only marks as paid after confirmed (online/offline). 
  */
 function CustomerPaymentSection({
   usageRecord,
@@ -790,10 +791,26 @@ function App() {
         </div>
         <CustomerSelector customers={customers} customerId={selectedCustomerId} setCustomerId={setSelectedCustomerId} />
 
-        {/* Customer: Late Payment Section */}
+        {/* Enhanced: Show bill summary, payment UI, and overdue/late reminders */}
+        {/* Payment + Reminder area */}
+        {usage && usage.paymentStatus !== "paid" && (
+          <>
+            <CustomerPaymentSection
+              usageRecord={usage}
+              onMarkPaid={handleMarkPaid}
+              paymentState={customerPaymentState}
+              setPaymentState={setCustomerPaymentState}
+            />
+          </>
+        )}
+        {/* Late Payment/Status Card (remains for visual cues, but only enable Mark as Paid if NOT marked paid) */}
         <CustomerLatePaymentCard
           usageRecord={usage}
-          onMarkPaid={() => markPaymentDone(selectedCustomerId)}
+          onMarkPaid={() => handleMarkPaid(
+            (customerPaymentState.mode === "Online" && customerPaymentState.method)
+              ? customerPaymentState.method
+              : (customerPaymentState.mode || "offline")
+          )}
         />
 
         <CustomerDashboard customer={customer} usageRecord={usage} />
@@ -811,24 +828,6 @@ function App() {
             animation: "blinkme 0.8s linear infinite alternate"
           }}>
             {reminderMessage}
-            {usage && usage.paymentStatus !== 'paid' && (
-              <>
-                <button
-                  className="btn"
-                  style={{
-                    marginLeft: 18,
-                    background: '#caf0fe',
-                    color: '#000',
-                    fontWeight: 700,
-                    border: '2px solid #fff',
-                    boxShadow: 'none',
-                  }}
-                  onClick={() => markPaymentDone(selectedCustomerId)}
-                >
-                  Mark as Paid
-                </button>
-              </>
-            )}
           </div>
         )}
       </>
