@@ -892,16 +892,62 @@ function App() {
     }
   }
   else if (role === 'customer') {
-    // Customer login required
+    // NEW: Customer entry - show dual button for Login/Signup
+    const [customerEntryView, setCustomerEntryView] = useState("");
+    const [customerLoginFields, setCustomerLoginFields] = useState({});
+    const [customerSignupFields, setCustomerSignupFields] = useState({});
+    const [customerEntryErr, setCustomerEntryErr] = useState("");
+    // login handler - demo only: accept any credentials for now
+    const handleCustomerLogin = (fields, _err) => {
+      if (
+        !fields ||
+        !fields.name ||
+        !fields.password ||
+        !fields.ebcard
+      ) {
+        setCustomerEntryErr("All fields are required.");
+        return;
+      }
+      setCustomerAuth(fields);
+      setCustomerEntryErr("");
+    };
+    // signup handler - demo only, no registration logic
+    const handleCustomerSignup = (fields, _err) => {
+      if (
+        !fields ||
+        !fields.ebcard ||
+        !fields.phone ||
+        !fields.name ||
+        !fields.password ||
+        !fields.confirmpwd
+      ) {
+        setCustomerEntryErr("All fields are required.");
+        return;
+      }
+      if (!/^[0-9]{10}$/.test(fields.phone)) {
+        setCustomerEntryErr("Phone number must be exactly 10 digits.");
+        return;
+      }
+      if (fields.password !== fields.confirmpwd) {
+        setCustomerEntryErr("Password and Confirm Password must match.");
+        return;
+      }
+      // Registration success (simulate).
+      setCustomerAuth({
+        name: fields.name, password: fields.password, ebcard: fields.ebcard
+      });
+      setCustomerEntryErr("");
+    };
+
+    // Initial landing screen for customer route (and login/signup)
     if (!customerAuth) {
       mainView = (
-        <CustomerLoginForm
-          onLogin={(cred, err) => {
-            if (err) return setCustomerLoginErr(err);
-            setCustomerAuth(cred);
-            setCustomerLoginErr("");
-          }}
-          errorMsg={customerLoginErr}
+        <CustomerPortalEntry
+          onLogin={handleCustomerLogin}
+          onSignup={handleCustomerSignup}
+          errorMsg={customerEntryErr}
+          view={customerEntryView}
+          setView={setCustomerEntryView}
         />
       );
     } else {
@@ -919,77 +965,68 @@ function App() {
       }
       const usage = usageRecords.find(r => r.customerId === selectedCustomerId);
 
-      // Customer Details form is permanently removed for Customer
-      if (!customerFormComplete) {
-        mainView = (
-          <div className="panel" style={{ marginTop: 36, fontWeight: 700, fontSize: "1.27em" }}>
-            Welcome! Customer registration is no longer required.
-          </div>
-        );
-      } else {
-        mainView = (
-          <>
-            <div className="panel" style={{
-              background: 'linear-gradient(100deg, #caf0fe 0%, #e6f6fd 100%)',
-              color: '#000',
-              marginBottom: 28,
-              fontFamily: "'Montserrat', 'Poppins', Arial, sans-serif",
+      mainView = (
+        <>
+          <div className="panel" style={{
+            background: 'linear-gradient(100deg, #caf0fe 0%, #e6f6fd 100%)',
+            color: '#000',
+            marginBottom: 28,
+            fontFamily: "'Montserrat', 'Poppins', Arial, sans-serif",
+          }}>
+            <h1 style={{
+              fontSize: '2.1rem',
+              color: '#222'
             }}>
-              <h1 style={{
-                fontSize: '2.1rem',
-                color: '#222'
-              }}>
-                Customer Dashboard
-              </h1>
-              <div className="description" style={{
-                fontSize: '1.08em', color: '#555'
-              }}>
-                Check your electricity usage status, payables, and notifications.
-              </div>
+              Customer Dashboard
+            </h1>
+            <div className="description" style={{
+              fontSize: '1.08em', color: '#555'
+            }}>
+              Check your electricity usage status, payables, and notifications.
             </div>
-            <CustomerSelector customers={customers} customerId={selectedCustomerId} setCustomerId={setSelectedCustomerId} />
+          </div>
+          <CustomerSelector customers={customers} customerId={selectedCustomerId} setCustomerId={setSelectedCustomerId} />
 
-            {/* Bill/payment UI/late payment only for customers */}
-            {usage && usage.paymentStatus !== "paid" &&
-              <CustomerPaymentSection
-                usageRecord={usage}
-                onMarkPaid={handleMarkPaid}
-                paymentState={customerPaymentState}
-                setPaymentState={setCustomerPaymentState}
-              />
-            }
-            <CustomerLatePaymentCard
+          {/* Bill/payment UI/late payment only for customers */}
+          {usage && usage.paymentStatus !== "paid" &&
+            <CustomerPaymentSection
               usageRecord={usage}
-              onMarkPaid={() => handleMarkPaid(
-                (customerPaymentState.mode === "Online" && customerPaymentState.method)
-                  ? customerPaymentState.method
-                  : (customerPaymentState.mode || "offline")
-              )}
+              onMarkPaid={handleMarkPaid}
+              paymentState={customerPaymentState}
+              setPaymentState={setCustomerPaymentState}
             />
-            <CustomerDashboard
-              customer={customer}
-              usageRecord={usage}
-              previousDue={previousDue}
-              newBill={newBill}
-            />
-            {reminderMessage && (
-              <div style={{
-                marginTop: 20,
-                background: "#e84545",
-                color: "#fff",
-                padding: "20px 18px",
-                borderRadius: 12,
-                fontWeight: 600,
-                fontSize: "1.12rem",
-                boxShadow: "0 2px 12px #91919140",
-                animation: "blinkme 0.8s linear infinite alternate"
-              }}>
-                {reminderMessage}
-              </div>
+          }
+          <CustomerLatePaymentCard
+            usageRecord={usage}
+            onMarkPaid={() => handleMarkPaid(
+              (customerPaymentState.mode === "Online" && customerPaymentState.method)
+                ? customerPaymentState.method
+                : (customerPaymentState.mode || "offline")
             )}
-          </>
-        );
-      }
+          />
+          <CustomerDashboard
+            customer={customer}
+            usageRecord={usage}
+            previousDue={previousDue}
+            newBill={newBill}
+          />
+          {reminderMessage && (
+            <div style={{
+              marginTop: 20,
+              background: "#e84545",
+              color: "#fff",
+              padding: "20px 18px",
+              borderRadius: 12,
+              fontWeight: 600,
+              fontSize: "1.12rem",
+              boxShadow: "0 2px 12px #91919140",
+              animation: "blinkme 0.8s linear infinite alternate"
+            }}>
+              {reminderMessage}
+            </div>
+          )}
+        </>
+      );
     }
   }
 
