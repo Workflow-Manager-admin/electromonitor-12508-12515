@@ -380,20 +380,12 @@ function App() {
   }
 
   return (
-    <div className="app" style={{
-      background: 'linear-gradient(120deg, #caf0fe 0%, #fafdff 100%)',
-      minHeight: '100vh',
-      fontFamily: "'Poppins', 'Montserrat', Arial, sans-serif"
-    }}>
+    <div className="app">
       {/* Navbar */}
-      <nav className="navbar" style={{
-        background: '#000',
-        color: '#caf0fe',
-        fontFamily: "'Poppins', 'Montserrat', Arial, sans-serif",
-      }}>
+      <nav className="navbar">
         <div className="container">
           <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
-            <div className="logo" style={{ fontFamily: "'Montserrat', 'Poppins', Arial, sans-serif", color: '#caf0fe' }}>
+            <div className="logo">
               <span className="logo-symbol" style={{color: '#e87a41'}}>⚡</span> ElectroMonitor
               <span style={{
                 fontWeight: 400,
@@ -408,11 +400,9 @@ function App() {
             {role &&
               <button className="btn"
                 style={{
-                  background: '#caf0fe',
-                  color: '#111',
-                  fontWeight: 700,
                   border: '1.5px solid #919191',
-                  marginLeft: 12
+                  marginLeft: 12,
+                  fontWeight: 700
                 }}
                 onClick={() => setRole('')}
               >
