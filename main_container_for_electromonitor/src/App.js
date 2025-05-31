@@ -35,40 +35,30 @@ function RoleSelector({ setRole }) {
     <section className="hero" style={{
       minHeight: '70vh',
       justifyContent: 'center',
-      background: 'linear-gradient(120deg, #caf0fe 0%, #eef8ff 100%)',
       borderRadius: 14
     }}>
       <div>
-        <div className="subtitle" style={{ color: '#000', fontSize: '1.2rem', fontWeight: 500 }}>
+        <div className="subtitle" style={{ fontSize: '1.2rem', fontWeight: 500 }}>
           Welcome to ElectroMonitor
         </div>
-        <h1 className="title" style={{ color: '#222', fontFamily: "'Poppins', Arial, sans-serif", fontWeight: 700, fontSize: '2.45rem', marginBottom: 8 }}>
+        <h1 className="title" style={{ fontWeight: 700, fontSize: '2.45rem', marginBottom: 8 }}>
           Smarter Management for Power
         </h1>
-        <div className="description" style={{
-          color: '#555',
-          fontFamily: "'Montserrat', Arial, sans-serif"
-        }}>
+        <div className="description">
           Monitor, input, and stay notified on your electricity usage.<br/>
           Please choose your role to proceed:
         </div>
         <div style={{ marginTop: 34 }}>
           <button className="btn btn-large" style={{
-            background: '#caf0fe',
-            color: '#111',
             border: '2px solid #919191',
             margin: '0 18px',
-            fontWeight: 600,
-            fontFamily: "'Montserrat', Arial, sans-serif"
+            fontWeight: 600
           }} onClick={() => setRole('officer')}>
             <span role="img" aria-label="Officer">🦺</span> EB Officer
           </button>
           <button className="btn btn-large" style={{
-            background: '#919191',
-            color: '#fff',
             border: '2px solid #000',
-            fontWeight: 600,
-            fontFamily: "'Montserrat', Arial, sans-serif"
+            fontWeight: 600
           }} onClick={() => setRole('customer')}>
             <span role="img" aria-label="Customer">💡</span> Customer
           </button>
