@@ -90,18 +90,12 @@ function OfficerUsageEntry({ customers, addUsage }) {
   }
 
   return (
-    <div className="panel" style={{
-      boxShadow: '0 2px 12px 0 rgba(202,240,254,0.09)',
-      background: 'linear-gradient(120deg, #caf0fe 0%, #ffffff 120%)',
-      fontFamily: "'Montserrat', 'Poppins', Arial, sans-serif"
-    }}>
-      <div className="subtitle" style={{ color: '#111', marginBottom: 16, fontWeight: 600 }}>
+    <div className="panel">
+      <div className="subtitle" style={{ marginBottom: 16, fontWeight: 600 }}>
         Welcome, EB Officer!
       </div>
       <h2 style={{
-        fontFamily: "'Poppins',serif",
         fontWeight: 600,
-        color: '#000',
         marginBottom: 8
       }}>
         Input Usage Data for Customers
@@ -110,10 +104,6 @@ function OfficerUsageEntry({ customers, addUsage }) {
         <div>
           <label style={{fontWeight: 500}}>Customer:</label><br />
           <select className="btn"
-              style={{ 
-                background: '#caf0fe', color: '#000',
-                fontFamily: "'Montserrat', Arial, sans-serif"
-              }}
               value={customerId}
               onChange={e => setCustomerId(e.target.value)}>
             {customers.map(c => (<option key={c.id} value={c.id}>{c.name}</option>))}
@@ -128,7 +118,7 @@ function OfficerUsageEntry({ customers, addUsage }) {
             step="0.01"
             onChange={e => setUsage(e.target.value)}
             className="btn"
-            style={{ width: 90, background: '#fff', color: '#000' }}
+            style={{ width: 90 }}
             placeholder="e.g. 240"
             required
           />
@@ -140,14 +130,13 @@ function OfficerUsageEntry({ customers, addUsage }) {
             value={chipId}
             onChange={e => setChipId(e.target.value)}
             className="btn"
-            style={{ width: 120, letterSpacing: 1, background: '#f8faff', color: '#222' }}
+            style={{ width: 120, letterSpacing: 1 }}
             placeholder="e.g. CHIP1234"
             required
           />
         </div>
         <button className="btn" style={{
-          background: '#919191',
-          color: '#fff',
+          background: 'var(--kavia-orange)',
           fontWeight: 600
         }} type="submit">Add Usage</button>
       </form>
