@@ -481,7 +481,8 @@ function CustomerPaymentSection({
 }
 
 // ----- Customer Registration/Details Form -----
-function CustomerDetailForm({ value, onChange, onSubmit, errorPopup }) {
+// Enhanced: allow showing/hiding chipId/usage based on prop, enlarge visually
+function CustomerDetailForm({ value, onChange, onSubmit, errorPopup, showChip, showUsage }) {
   const [name, setName] = useState(value.name || '');
   const [phone, setPhone] = useState(value.phone || '');
   const [chipId, setChipId] = useState(value.chipId || '');
@@ -493,22 +494,38 @@ function CustomerDetailForm({ value, onChange, onSubmit, errorPopup }) {
   }, [name, phone, chipId, usage]);
 
   return (
-    <form className="panel" style={{marginBottom:22, marginTop:10, maxWidth:550, marginLeft:'auto', marginRight:'auto'}} onSubmit={e => {e.preventDefault(); onSubmit();}}>
-      <div className="subtitle" style={{fontWeight:700, marginBottom:12}}>Customer Details</div>
-      <div style={{display:'flex', flexWrap:'wrap', gap:18, alignItems:'center', justifyContent:'center'}}>
+    <form className="panel customer-details-large"
+      style={{
+        marginBottom: 32,
+        marginTop: 18,
+        maxWidth: 700,
+        marginLeft: 'auto',
+        marginRight: 'auto',
+        boxShadow: '0 6px 32px #91919125'
+      }}
+      onSubmit={e => { e.preventDefault(); onSubmit(); }}>
+      <div className="subtitle" style={{
+        fontWeight: 900,
+        marginBottom: 15,
+        fontSize: '1.55em',
+        letterSpacing: '0.01em',
+        textAlign: 'center',
+        color: '#1A1A1A'
+      }}>Customer Details</div>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 38, alignItems: 'center', justifyContent: 'center', marginBottom: 18, fontSize: "1.15em" }}>
         <div>
-          <label style={{fontWeight:600}}>Name:</label><br/>
+          <label style={{ fontWeight: 600 }}>Name:</label><br />
           <input
             value={name}
             onChange={e => setName(e.target.value)}
             required
             maxLength={40}
-            style={{width:150}}
+            style={{ width: 160, fontSize: "1.17em", padding: '10px' }}
             placeholder="e.g. Arun Kumar"
           />
         </div>
         <div>
-          <label style={{fontWeight:600}}>Phone #:</label><br/>
+          <label style={{ fontWeight: 600 }}>Phone #:</label><br />
           <input
             value={phone}
             onChange={e => setPhone(e.target.value.replace(/\D/,''))}
@@ -516,38 +533,50 @@ function CustomerDetailForm({ value, onChange, onSubmit, errorPopup }) {
             maxLength={10}
             minLength={10}
             pattern="^[0-9]{10}$"
-            style={{width:120}}
+            style={{ width: 130, fontSize: "1.17em", padding: '10px' }}
             placeholder="10 digits"
             inputMode="numeric"
           />
         </div>
-        <div>
-          <label style={{fontWeight:600}}>Chip ID:</label><br/>
-          <input
-            value={chipId}
-            onChange={e => setChipId(e.target.value.replace(/[^a-zA-Z0-9]/g,''))}
-            required
-            maxLength={8}
-            style={{letterSpacing:1, width:100}}
-            placeholder="Alphanumeric, ≤8"
-          />
-        </div>
-        <div>
-          <label style={{fontWeight:600}}>Usage (kWh):</label><br/>
-          <input
-            value={usage}
-            onChange={e => setUsage(e.target.value.replace(/[^0-9.]/g,''))}
-            type="number"
-            required
-            min="0"
-            step="0.1"
-            style={{width:90}}
-            placeholder="Numeric"
-          />
-        </div>
+        {showChip &&
+          <div>
+            <label style={{ fontWeight: 600 }}>Chip ID:</label><br />
+            <input
+              value={chipId}
+              onChange={e => setChipId(e.target.value.replace(/[^a-zA-Z0-9]/g, ''))}
+              required
+              maxLength={8}
+              style={{ letterSpacing: 1, width: 120, fontSize: "1.17em", padding: '10px' }}
+              placeholder="Alphanumeric, ≤8"
+            />
+          </div>
+        }
+        {showUsage &&
+          <div>
+            <label style={{ fontWeight: 600 }}>Usage (kWh):</label><br />
+            <input
+              value={usage}
+              onChange={e => setUsage(e.target.value.replace(/[^0-9.]/g, ''))}
+              type="number"
+              required
+              min="0"
+              step="0.1"
+              style={{ width: 110, fontSize: "1.17em", padding: '10px' }}
+              placeholder="Numeric"
+            />
+          </div>
+        }
       </div>
-      <button className="btn" style={{marginTop:20, fontWeight:700, border:'1.5px solid #919191', color:'#fff'}}>Submit</button>
-      {errorPopup && <div style={{marginTop:10, color:'#800000', fontWeight:600}}>{errorPopup}</div>}
+      <button className="btn" style={{
+        marginTop: 18,
+        fontWeight: 900,
+        border: '2px solid #919191',
+        color: '#fff',
+        fontSize: '1.13em',
+        paddingLeft: 30,
+        paddingRight: 30
+      }}>Submit</button>
+      {errorPopup && <div style={{ marginTop: 18, color: '#800000', fontWeight: 700, fontSize: "1.1em", textAlign:"center" }}>{errorPopup}</div>}
     </form>
   );
 }
