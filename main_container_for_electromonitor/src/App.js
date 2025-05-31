@@ -350,13 +350,25 @@ function App() {
     const now = new Date().toLocaleString('en-IN', { hour12: true });
     setUsageRecords(prev => {
       // Replace if exists, otherwise add new
-      const updated = prev.filter(r => r.customerId !== customerId);
-      updated.push({ customerId, usage, payable, chipId, updatedAt: now });
+      let updated = prev.filter(r => r.customerId !== customerId);
+      updated.push({ customerId, usage, payable, chipId, updatedAt: now, paymentStatus: 'unpaid' });
       return updated;
     });
     // Notification: Inform customer
     const customer = customers.find(c => c.id === customerId);
     setNotification(`Notification: ${customer.name} - New usage data entered. Payable Amount is ₹${payable}.`);
+  }
+
+  // PUBLIC_INTERFACE
+  function markPaymentDone(customerId) {
+    setUsageRecords(records =>
+      records.map(r =>
+        r.customerId === customerId
+          ? { ...r, paymentStatus: 'paid' }
+          : r
+      )
+    );
+    setReminderMessage(''); // clear any reminders if there
   }
 
   // Handler: Dismiss notification
