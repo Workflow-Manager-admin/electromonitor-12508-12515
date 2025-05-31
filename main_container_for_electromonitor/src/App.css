@@ -89,6 +89,17 @@ body {
   color: #000 !important;
 }
 
+/* Prominent welcome message style for the role selector */
+.welcome-message {
+  font-size: 4rem;
+  font-weight: 800;
+  margin-bottom: 0.18em;
+  color: var(--kavia-orange) !important;
+  font-family: 'Lucida Handwritten', cursive, sans-serif !important;
+  letter-spacing: 0.03em;
+  text-shadow: 0 2px 11px #f0efeb80;
+}
+
 .subtitle {
   color: var(--kavia-orange) !important; /* now grey */
   font-weight: 500;
