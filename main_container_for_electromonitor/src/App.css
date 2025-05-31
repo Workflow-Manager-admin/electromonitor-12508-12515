@@ -233,11 +233,41 @@ body {
   color: #222 !important;
 }
 
-.login-form label {
+/* LABEL ENHANCEMENT: increase font size, weight and spacing for all officer and dashboard labels */
+.login-form label,
+.officer-panel label,
+.usage-panel label,
+.dashboard-panel label {
   color: #222 !important;
-  font-size: 1.06em !important;
+  font-size: 1.28em !important;
   font-family: 'Lucida Handwritten', cursive, sans-serif !important;
   font-weight: 900 !important;
+  letter-spacing: 0.025em !important;
+  line-height: 1.2 !important;
+}
+
+/* Optionally, if officer usage entry/dashboard panels use panel class with labels: */
+.panel label {
+  font-size: 1.24em !important;
+  font-weight: 900 !important;
+  color: #181818 !important;
+  letter-spacing: 0.015em !important;
+}
+
+/* For tables/lists that might use th or similar for section headings in the officer's dashboard: */
+.officer-dashboard th,
+.dashboard-panel th {
+  font-size: 1.18em !important;
+  font-weight: 900 !important;
+  letter-spacing: 0.01em !important;
+}
+
+.login-form label {
+  color: #222 !important;
+  font-size: 1.28em !important;
+  font-family: 'Lucida Handwritten', cursive, sans-serif !important;
+  font-weight: 900 !important;
+  letter-spacing: 0.02em !important;
 }
 
 /* === Custom LATE PAYMENT Styling overrides === */
