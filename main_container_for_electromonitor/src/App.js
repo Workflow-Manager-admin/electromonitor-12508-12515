@@ -140,7 +140,7 @@ function OfficerUsageEntry({ customers, addUsage }) {
           fontWeight: 600
         }} type="submit">Add Usage</button>
       </form>
-      {error && <div style={{ color: '#e87a41', marginTop: 12 }}>{error}</div>}
+      {error && <div style={{ color: '#919191', marginTop: 12 }}>{error}</div>}
     </div>
   );
 }
