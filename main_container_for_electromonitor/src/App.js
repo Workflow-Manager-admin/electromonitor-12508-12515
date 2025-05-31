@@ -885,24 +885,7 @@ function App() {
             setPopup(''); addUsage(c, u, chip);
           }} />
           <OfficerUsageTable usageRecords={usageRecords} customers={customers} />
-          {/* ENLARGED Customer details data for Officer - show all fields */}
-          {!customerFormComplete &&
-            <CustomerDetailForm
-              value={customerDetails}
-              onChange={setCustomerDetails}
-              errorPopup={popup}
-              onSubmit={() => {
-                const { name, phone, chipId, usage } = customerDetails;
-                if (!name || !phone || !chipId || !usage) { setPopup("All customer details are required."); return; }
-                if (!/^[0-9]{10}$/.test(phone)) { setPopup("Phone number must be exactly 10 digits."); return; }
-                if (!/^[a-zA-Z0-9]{1,8}$/.test(chipId)) { setPopup("Chip ID must be alphanumeric and ≤8 characters."); return; }
-                if (!/^\d+(\.\d+)?$/.test(usage) || Number(usage)<=0) { setPopup("Usage must be a positive numeric value."); return; }
-                setPopup(''); setCustomerFormComplete(true);
-              }}
-              showChip={true}
-              showUsage={true}
-            />
-          }
+          {/* Customer Details form is permanently removed for EB officer */}
           {popup && <NotificationBanner message={popup} onClose={() => setPopup('')} />}
         </div>
       );
@@ -936,22 +919,12 @@ function App() {
       }
       const usage = usageRecords.find(r => r.customerId === selectedCustomerId);
 
-      // Customer Detail Form: Only for new registrations, no chip/usage fields
+      // Customer Details form is permanently removed for Customer
       if (!customerFormComplete) {
         mainView = (
-          <CustomerDetailForm
-            value={customerDetails}
-            onChange={setCustomerDetails}
-            errorPopup={popup}
-            onSubmit={() => {
-              const { name, phone } = customerDetails;
-              if (!name || !phone) { setPopup("All customer details are required."); return; }
-              if (!/^[0-9]{10}$/.test(phone)) { setPopup("Phone number must be exactly 10 digits."); return; }
-              setPopup(''); setCustomerFormComplete(true);
-            }}
-            showChip={false}
-            showUsage={false}
-          />
+          <div className="panel" style={{ marginTop: 36, fontWeight: 700, fontSize: "1.27em" }}>
+            Welcome! Customer registration is no longer required.
+          </div>
         );
       } else {
         mainView = (
