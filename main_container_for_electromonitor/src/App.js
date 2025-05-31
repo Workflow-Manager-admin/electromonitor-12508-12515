@@ -501,17 +501,11 @@ function App() {
           fontWeight: 700, // Make the section a bit visually bolder
           boxShadow: "0 2px 10px #001f5420",
         }}>
-          <div className="subtitle" style={{
-            fontWeight: 800,
-            color: "#001f54",
-            marginBottom: 8,
-            fontSize: "1.26rem",
-            letterSpacing: 0.03,
-          }}>
+          <div className="late-payment-heading">
             Late Payment Records
           </div>
           {lateList.length === 0 ? (
-            <div style={{color: '#919191', fontWeight: 500}}>No late payments at this time.</div>
+            <div className="late-payment-none-message">No late payments at this time.</div>
           ) : (
             <table style={{
               width: '100%',
