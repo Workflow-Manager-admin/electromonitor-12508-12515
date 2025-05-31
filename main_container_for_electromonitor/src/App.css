@@ -1,5 +1,5 @@
 :root {
-  --kavia-orange: #E87A41;
+  --kavia-orange: #919191; /* Changed from orange to grey */
   --kavia-dark: #f5f5f5;
   --text-color: #000000;
   --text-secondary: #000000;
@@ -62,7 +62,7 @@ body {
 }
 
 .logo-symbol {
-  color: var(--kavia-orange) !important;
+  color: var(--kavia-orange) !important; /* now grey */
 }
 
 .container {
@@ -90,7 +90,7 @@ body {
 }
 
 .subtitle {
-  color: var(--kavia-orange) !important;
+  color: var(--kavia-orange) !important; /* now grey */
   font-weight: 500;
   font-size: 1.1rem;
   font-family: 'Lucida Handwritten', cursive, sans-serif !important;
