@@ -355,14 +355,43 @@ function App() {
     const payable = calculatePayable(usage);
     const now = new Date().toLocaleString('en-IN', { hour12: true });
     setUsageRecords(prev => {
-      // Replace if exists, otherwise add new
+      // Refactor: If there is an unpaid previous record, combine unpaid with new
+      const existing = prev.find(r => r.customerId === customerId && r.paymentStatus === 'unpaid');
       let updated = prev.filter(r => r.customerId !== customerId);
-      updated.push({ customerId, usage, payable, chipId, updatedAt: now, paymentStatus: 'unpaid' });
+      if (existing) {
+        // Combine both usage and payables
+        const totalUsage = existing.usage + usage;
+        const totalPayable = existing.payable + payable;
+        updated.push({
+          customerId,
+          usage: totalUsage,
+          payable: totalPayable,
+          chipId,
+          updatedAt: now,
+          paymentStatus: 'unpaid'
+        });
+      } else {
+        updated.push({ customerId, usage, payable, chipId, updatedAt: now, paymentStatus: 'unpaid' });
+      }
       return updated;
     });
     // Notification: Inform customer
     const customer = customers.find(c => c.id === customerId);
-    setNotification(`Notification: ${customer.name} - New usage data entered. Payable Amount is ₹${payable}.`);
+    setNotification(
+      `Notification: ${customer.name} - New usage data entered. Payable Amount is ₹${payable}${
+        (() => {
+          // If there is an unpaid balance, notify about the sum as well
+          const prevRec = usageRecords.find(
+            r => r.customerId === customerId && r.paymentStatus === 'unpaid'
+          );
+          if (prevRec) {
+            const sum = prevRec.payable + payable;
+            return ` (Total Outstanding: ₹${sum})`;
+          }
+          return '';
+        })()
+      }.`
+    );
   }
   // PUBLIC_INTERFACE
   function markPaymentDone(customerId) {
