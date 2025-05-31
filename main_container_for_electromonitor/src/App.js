@@ -197,6 +197,196 @@ function OfficerUsageTable({ usageRecords, customers }) {
   );
 }
 
+/**
+ * Enhanced CustomerPaymentSection: UI for payment method/status.
+ * Lets user choose payment method: 
+ *  - Select Online/Offline (radio or select)
+ *  - If Online, select detailed method
+ * Handles "Mark Paid" operation flows.
+ */
+function CustomerPaymentSection({
+  usageRecord,
+  onMarkPaid,
+  paymentState,
+  setPaymentState
+}) {
+  if (!usageRecord || usageRecord.paymentStatus === "paid") return null;
+
+  const [showConfirm, setShowConfirm] = useState(false);
+
+  const payment_methods = {
+    Online: [
+      { label: 'PhonePe', value: 'phonepe' },
+      { label: 'Pay', value: 'pay' },
+      { label: 'Card (debit)', value: 'card_debit' },
+      { label: 'Card (credit)', value: 'card_credit' }
+    ],
+    Offline: []
+  };
+
+  // paymentState example: { mode: "Online"|"Offline", method: "phonepe"|"pay"|... }
+  // For control outside (send state up so parent preserves on re-render)
+  function handleModeChange(e) {
+    const newValue = e.target.value;
+    setPaymentState(ps => ({
+      ...ps,
+      mode: newValue,
+      // reset method if switching to Offline
+      method: newValue === 'Online' ? (ps.method || 'phonepe') : ''
+    }));
+  }
+
+  // Keep default selection
+  useEffect(() => {
+    if (!paymentState.mode) {
+      setPaymentState(ps => ({ ...ps, mode: 'Offline', method: '' }));
+    }
+    // eslint-disable-next-line
+  }, []);
+
+  function handleMethodChange(e) {
+    setPaymentState(ps => ({
+      ...ps,
+      method: e.target.value
+    }));
+  }
+
+  // Handler: confirm payment (shows confirm UI if online, otherwise marks paid)
+  function handlePayClick() {
+    if (paymentState.mode === 'Online') {
+      setShowConfirm(true);
+    } else {
+      onMarkPaid("offline");
+    }
+  }
+  // Handler: Complete simulated online payment
+  function handleConfirmOnline() {
+    setShowConfirm(false);
+    onMarkPaid(paymentState.method || "online");
+  }
+  function handleCancelOnline() {
+    setShowConfirm(false);
+  }
+
+  return (
+    <div className="panel" style={{
+      marginTop: 18,
+      marginBottom: 10,
+      background: '#f7fbff',
+      border: '2.5px solid #919191',
+      borderRadius: 10,
+      fontWeight: 500,
+      fontSize: "1.05em"
+    }}>
+      <div style={{ fontWeight: 700, fontSize: "1.2em", marginBottom: 7 }}>
+        Choose Payment Option
+      </div>
+      <form style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 18 }}>
+        <label style={{ marginRight: 10, fontWeight: 500 }}>
+          <input
+            type="radio"
+            name="pay_mode"
+            value="Online"
+            checked={paymentState.mode === "Online"}
+            onChange={handleModeChange}
+            style={{ marginRight: 6 }}
+          />
+          Online
+        </label>
+        <label style={{ marginRight: 18, fontWeight: 500 }}>
+          <input
+            type="radio"
+            name="pay_mode"
+            value="Offline"
+            checked={paymentState.mode === "Offline"}
+            onChange={handleModeChange}
+            style={{ marginRight: 6 }}
+          />
+          Offline
+        </label>
+        {paymentState.mode === "Online" && (
+          <select
+            className="btn"
+            style={{ marginLeft: 10, minWidth: 150 }}
+            value={paymentState.method || "phonepe"}
+            onChange={handleMethodChange}
+            aria-label="Select online payment method"
+          >
+            {payment_methods.Online.map(opt => (
+              <option value={opt.value} key={opt.value}>{opt.label}</option>
+            ))}
+          </select>
+        )}
+      </form>
+      <div style={{ marginTop: 28, textAlign: "right" }}>
+        <button
+          className="btn btn-large"
+          style={{
+            background: paymentState.mode === "Online" ? "#caf0fe" : "#12C984",
+            color: paymentState.mode === "Online" ? "#222" : "#fff",
+            fontWeight: 700,
+            border: "2px solid #919191"
+          }}
+          type="button"
+          onClick={handlePayClick}
+        >
+          {paymentState.mode === "Online" ? "Pay & Confirm Online" : "Mark as Paid (Offline)"}
+        </button>
+      </div>
+      {/* Simulated Confirmation Dialog for Online */}
+      {showConfirm && paymentState.mode === "Online" && (
+        <div
+          style={{
+            marginTop: 16,
+            background: "#91919111",
+            border: "1.5px solid #919191",
+            borderRadius: 7,
+            padding: 12,
+            fontWeight: 600
+          }}
+        >
+          <div>
+            You are paying by: <b>
+              {(payment_methods.Online.find(m => m.value === paymentState.method) || {}).label || "PhonePe"}
+            </b>
+            <br />
+            {/* Add sim transaction ref or success simulation */}
+            <span style={{ fontSize: "0.97em", color: "#919191" }}>
+              This is a simulated confirmation. Proceed to complete payment?
+            </span>
+          </div>
+          <button
+            className="btn"
+            style={{
+              background: "#12C984",
+              color: "#fff",
+              marginRight: 15,
+              marginTop: 8,
+              fontWeight: 700,
+              border: "1.5px solid #919191"
+            }}
+            onClick={handleConfirmOnline}
+          >
+            Confirm Payment
+          </button>
+          <button
+            className="btn"
+            style={{
+              background: "#caf0fe",
+              color: "#222",
+              fontWeight: 700,
+              border: "1.5px solid #919191"
+            }}
+            onClick={handleCancelOnline}
+          >
+            Cancel
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ----- Customer: Dashboard -----
 function CustomerDashboard({ customer, usageRecord }) {
   return (
