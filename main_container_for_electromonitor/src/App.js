@@ -535,6 +535,10 @@ function App() {
   const [notification, setNotification] = useState('');
   const [selectedCustomerId, setSelectedCustomerId] = useState(customers[0].id);
 
+  // Customer payment interface logic
+  // Track current customer payment UI state: payment mode (online/offline) and online method
+  const [customerPaymentState, setCustomerPaymentState] = useState({}); // shape: { mode, method }
+
   // Reminders for customer late payment
   const [reminderMessage, setReminderMessage] = useState('');
   const reminderTimerRef = useRef(null);
@@ -583,16 +587,20 @@ function App() {
       }.`
     );
   }
-  // PUBLIC_INTERFACE
-  function markPaymentDone(customerId) {
+
+  // Updated payment handler: only set paid after explicit payment confirmation
+  // type describes how paid ("offline"/"online"/<method>)
+  function handleMarkPaid(type = "offline") {
     setUsageRecords(records =>
       records.map(r =>
-        r.customerId === customerId
-          ? { ...r, paymentStatus: 'paid' }
+        r.customerId === selectedCustomerId && r.paymentStatus !== "paid"
+          ? { ...r, paymentStatus: 'paid', paymentType: type }
           : r
       )
     );
     setReminderMessage('');
+    // Reset payment UI
+    setCustomerPaymentState({});
   }
 
   // Handler: Dismiss notification
