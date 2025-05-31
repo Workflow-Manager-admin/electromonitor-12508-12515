@@ -275,7 +275,7 @@ function CustomerSelector({ customers, customerId, setCustomerId }) {
   );
 }
 
-
+// --- LATE PAYMENT: Section logic ---
 
 const LATE_PAYMENT_PERIOD_DAYS = 2; // Payment is due 2 days after usage update
 const LATE_PAYMENT_REMINDER_INTERVAL = 7000; // ms between reminders
@@ -315,6 +315,7 @@ function isPaymentDueSoon(record) {
   return now < dueDate && (dueDate - now < 2 * 24 * 60 * 60 * 1000);
 }
 
+// ----- In-Memory Data -----
 const initialCustomers = [
   { id: 'c1', name: 'Arun Kumar' },
   { id: 'c2', name: 'Sneha Bhat' },
@@ -339,6 +340,7 @@ function App() {
   // State: role, mock customer/usage, notification
   const [role, setRole] = useState('');
   const [customers] = useState(initialCustomers);
+  // Payable status can be "unpaid" or "paid"
   const [usageRecords, setUsageRecords] = useState([]); // [{customerId, usage, payable, chipId, updatedAt, paymentStatus}]
   const [notification, setNotification] = useState('');
   const [selectedCustomerId, setSelectedCustomerId] = useState(customers[0].id);
@@ -347,7 +349,40 @@ function App() {
   const [reminderMessage, setReminderMessage] = useState('');
   const reminderTimerRef = useRef(null);
 
-  // Effect: Handle customer reminders for late payment
+  // --- State-changing Handlers ---
+  // PUBLIC_INTERFACE
+  function addUsage(customerId, usage, chipId) {
+    const payable = calculatePayable(usage);
+    const now = new Date().toLocaleString('en-IN', { hour12: true });
+    setUsageRecords(prev => {
+      // Replace if exists, otherwise add new
+      let updated = prev.filter(r => r.customerId !== customerId);
+      updated.push({ customerId, usage, payable, chipId, updatedAt: now, paymentStatus: 'unpaid' });
+      return updated;
+    });
+    // Notification: Inform customer
+    const customer = customers.find(c => c.id === customerId);
+    setNotification(`Notification: ${customer.name} - New usage data entered. Payable Amount is ₹${payable}.`);
+  }
+  // PUBLIC_INTERFACE
+  function markPaymentDone(customerId) {
+    setUsageRecords(records =>
+      records.map(r =>
+        r.customerId === customerId
+          ? { ...r, paymentStatus: 'paid' }
+          : r
+      )
+    );
+    setReminderMessage('');
+  }
+
+  // Handler: Dismiss notification
+  // PUBLIC_INTERFACE
+  function handleCloseNotification() {
+    setNotification('');
+  }
+
+  // Reminders: Customer late payment
   useEffect(() => {
     if (!role || role !== 'customer') {
       setReminderMessage('');
@@ -355,6 +390,7 @@ function App() {
       return;
     }
     const usage = usageRecords.find(r => r.customerId === selectedCustomerId);
+
     if (
       usage &&
       usage.paymentStatus !== 'paid' &&
@@ -393,41 +429,7 @@ function App() {
     // eslint-disable-next-line
   }, [role, selectedCustomerId, usageRecords]);
 
-  // Handler: Officer adds usage for a customer
-  // PUBLIC_INTERFACE
-  function addUsage(customerId, usage, chipId) {
-    const payable = calculatePayable(usage);
-    const now = new Date().toLocaleString('en-IN', { hour12: true });
-    setUsageRecords(prev => {
-      // Replace if exists, otherwise add new
-      let updated = prev.filter(r => r.customerId !== customerId);
-      updated.push({ customerId, usage, payable, chipId, updatedAt: now, paymentStatus: 'unpaid' });
-      return updated;
-    });
-    // Notification: Inform customer
-    const customer = customers.find(c => c.id === customerId);
-    setNotification(`Notification: ${customer.name} - New usage data entered. Payable Amount is ₹${payable}.`);
-  }
-
-  // PUBLIC_INTERFACE
-  function markPaymentDone(customerId) {
-    setUsageRecords(records =>
-      records.map(r =>
-        r.customerId === customerId
-          ? { ...r, paymentStatus: 'paid' }
-          : r
-      )
-    );
-    setReminderMessage(''); // clear any reminders if there
-  }
-
-  // Handler: Dismiss notification
-  // PUBLIC_INTERFACE
-  function handleCloseNotification() {
-    setNotification('');
-  }
-
-  // Officer & Customer views
+  // Role-based main view
   let mainView;
   if (!role) {
     mainView = <RoleSelector setRole={setRole} />;
@@ -617,6 +619,96 @@ function App() {
           {mainView}
         </div>
       </main>
+    </div>
+  );
+}
+
+// PUBLIC_INTERFACE
+function CustomerLatePaymentCard({ usageRecord, onMarkPaid }) {
+  if (!usageRecord) return null;
+  const dueDate = usageRecord
+    ? addDays(usageRecord.updatedAt, LATE_PAYMENT_PERIOD_DAYS)
+    : null;
+  if (usageRecord.paymentStatus === 'paid')
+    return (
+      <div className="panel"
+        style={{
+          marginTop: 18,
+          background: "#12C98422",
+          color: "#000",
+          borderLeft: "8px solid #12C984",
+          fontWeight: 600,
+          fontSize: "1.13em",
+          boxShadow: "0 1px 4px #caf0fe77"
+        }}
+      >
+        ✅ Payment Completed.<br />
+        Thank you for your timely payment!
+      </div>
+    );
+  if (isLatePayment(usageRecord))
+    return (
+      <div className="panel"
+        style={{
+          marginTop: 14,
+          background: "#caf0fe",
+          borderLeft: "8px solid #e84545",
+          fontWeight: 600,
+          color: "#000",
+          boxShadow: "0 1px 4px #91919144"
+        }}>
+        <span style={{ fontSize: "1.09em", color: "#e84545", fontWeight: 800 }}>⚠️ Late Payment!</span> <br />
+        <span>
+          You have an overdue amount of <span style={{color:'#000', fontSize:'1.24em', fontWeight: 700}}>₹{usageRecord.payable}</span>.
+          <br/>It was due on <b>{dueDate && dueDate.toLocaleDateString('en-IN')}</b>.
+          <br/>
+          <span style={{ fontSize: "0.98em", color: "#000" }}>
+           Overdue duration: <b>{latePaymentOverdueDays(usageRecord)}</b> day(s).
+          </span>
+        </span>
+        <br />
+        <button className="btn"
+          style={{
+            background: '#e84545',
+            color: '#fff',
+            marginTop: 10,
+            fontWeight: 600
+          }}
+          onClick={onMarkPaid}
+        >
+          Mark as Paid Now
+        </button>
+      </div>
+    );
+  // Payment is not yet late, due soon
+  return (
+    <div className="panel"
+      style={{
+        marginTop: 14,
+        background: "#caf0fe",
+        borderLeft: "8px solid #919191",
+        fontWeight: 600,
+        color: "#000",
+        boxShadow: "0 1px 4px #caf0fe44"
+      }}>
+      <span style={{ fontSize: "1.08em", color: "#919191", fontWeight: 800 }}>Payment Due Soon</span> <br />
+      <span>
+        Amount Due: <span style={{fontWeight: 700}}>₹{usageRecord.payable}</span><br />
+        Due by: <b>{dueDate && dueDate.toLocaleDateString('en-IN')}</b>
+      </span>
+      <br />
+      <button className="btn"
+        style={{
+          background: '#caf0fe',
+          color: '#000',
+          marginTop: 10,
+          border: '1px solid #919191',
+          fontWeight: 600
+        }}
+        onClick={onMarkPaid}
+      >
+        Mark as Paid
+      </button>
     </div>
   );
 }
