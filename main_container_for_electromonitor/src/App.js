@@ -432,6 +432,21 @@ function App() {
   if (!role) {
     mainView = <RoleSelector setRole={setRole} />;
   } else if (role === 'officer') {
+    // Late payments for officer: collect list
+    const lateList = customers
+      .map(c => {
+        const usage = usageRecords.find(r => r.customerId === c.id);
+        return usage && isLatePayment(usage)
+          ? {
+              ...c,
+              amount: usage.payable,
+              overdueDays: latePaymentOverdueDays(usage),
+              dueDate: addDays(usage.updatedAt, LATE_PAYMENT_PERIOD_DAYS).toLocaleDateString('en-IN'),
+              updatedAt: usage.updatedAt,
+            }
+          : null;
+      })
+      .filter(Boolean);
     mainView = (
       <div>
         <div className="panel" style={{
@@ -445,6 +460,47 @@ function App() {
           <div className="description" style={{color: '#555'}}>
             You can view customer electricity records and enter chip-based usage data below.
           </div>
+        </div>
+
+        {/* Officer Late Payment Section */}
+        <div className="panel" style={{
+          background: '#fff',
+          border: '2.5px solid #caf0fe',
+          marginBottom: 24,
+        }}>
+          <div className="subtitle" style={{fontWeight: 700, color: "#000", marginBottom: 8, fontSize: "1.18rem"}}>
+            Late Payment Records
+          </div>
+          {lateList.length === 0 ? (
+            <div style={{color: '#919191', fontWeight: 500}}>No late payments at this time.</div>
+          ) : (
+            <table style={{ width: '100%', fontSize: '1rem', borderCollapse: 'collapse', marginTop: 5 }}>
+              <thead>
+                <tr>
+                  <th style={{padding:6, background:'#919191', color:'#fff'}}>Customer</th>
+                  <th style={{padding:6, background:'#919191', color:'#fff'}}>Overdue Amount</th>
+                  <th style={{padding:6, background:'#919191', color:'#fff'}}>Due Date</th>
+                  <th style={{padding:6, background:'#919191', color:'#fff'}}>Overdue (days)</th>
+                  <th style={{padding:6, background:'#919191', color:'#fff'}}>Last Updated</th>
+                </tr>
+              </thead>
+              <tbody>
+                {lateList.map(entry => (
+                  <tr key={entry.id}>
+                    <td style={{padding:6, fontWeight:600}}>{entry.name}</td>
+                    <td style={{padding:6, color:'#caf0fe', fontWeight: 700, fontSize: '1.07em'}}>
+                      ₹{entry.amount}
+                    </td>
+                    <td style={{padding:6}}>{entry.dueDate}</td>
+                    <td style={{padding:6, color:'#e84545', fontWeight:700}}>
+                      {entry.overdueDays}
+                    </td>
+                    <td style={{padding:6, color:'#919191'}}>{entry.updatedAt}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
         </div>
         <OfficerUsageEntry customers={customers} addUsage={addUsage} />
         <OfficerUsageTable usageRecords={usageRecords} customers={customers} />
