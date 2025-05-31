@@ -178,7 +178,7 @@ function OfficerUsageTable({ usageRecords, customers }) {
                 </td>
                 <td style={{
                   padding: 8,
-                  color: usage ? '#e87a41' : '#000',
+                  color: usage ? '#919191' : '#000',
                   fontWeight: usage ? 700 : 400
                 }}>
                   {usage ? `₹${usage.payable}` : '-'}
@@ -236,10 +236,10 @@ function CustomerDashboard({ customer, usageRecord }) {
       {usageRecord && (
         <div style={{
           marginTop: 24,
-          background: '#e87a41',
+          background: '#919191',
           padding: '12px 24px',
           borderRadius: 7,
-          color: '#000',
+          color: '#fff',
           fontWeight: 500,
           letterSpacing: 0.2
         }}>
@@ -386,7 +386,7 @@ function App() {
         <div className="container">
           <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
             <div className="logo">
-              <span className="logo-symbol" style={{color: '#e87a41'}}>⚡</span> ElectroMonitor
+              <span className="logo-symbol" style={{color: '#919191'}}>⚡</span> ElectroMonitor
               <span style={{
                 fontWeight: 400,
                 fontSize: '1rem',
