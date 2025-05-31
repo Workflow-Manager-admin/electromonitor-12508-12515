@@ -20,7 +20,7 @@ function NotificationBanner({ message, onClose }) {
           marginLeft: 24,
           background: 'var(--kavia-orange)',
           border: '1px solid #000',
-          color: '#000'
+          color: '#fff'
         }}
       >
         Close
