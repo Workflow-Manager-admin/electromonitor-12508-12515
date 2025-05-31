@@ -204,17 +204,22 @@ body {
   padding: 13px 44px !important;
 }
 
+/* Enlarged Login Form for both officer and customer */
 .login-form {
   background: #fff !important;
-  border-radius: 12px !important;
-  border: 2.5px solid #919191 !important;
-  box-shadow: 0 4px 28px #91919141 !important;
-  margin-top: 44px !important;
-  font-size: 1.04em !important;
-  padding: 38px 36px 32px 36px !important;
+  border-radius: 16px !important;
+  border: 3px solid #919191 !important;
+  box-shadow: 0 6px 32px #91919141 !important;
+  margin-top: 60px !important;
+  font-size: 1.17em !important;
+  padding: 52px 58px 44px 58px !important;
+  max-width: 460px !important;
+  min-width: 320px !important;
+  min-height: 410px !important;
 }
+
 .login-title {
-  font-size: 1.45em !important;
+  font-size: 1.72em !important;
   font-weight: 900 !important;
   color: #1a1a1a !important;
 }
