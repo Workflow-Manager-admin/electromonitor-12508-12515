@@ -200,27 +200,25 @@ function CustomerDashboard({ customer, usageRecord }) {
   return (
     <div className="hero" style={{
       paddingTop: 36,
-      background: 'linear-gradient(140deg, #caf0fe 40%, #e3eefb 100%)',
       minHeight: '58vh',
       borderRadius: 12
     }}>
       <div className="subtitle" style={{
-        color: '#000', fontWeight: 600,
+        fontWeight: 600,
         fontSize: '1.19rem'
       }}>
         Hello, {customer.name}!
       </div>
-      <h1 className="title" style={{ fontSize: '2.3rem', color: '#222', margin: 8, fontFamily: "'Poppins', Arial, sans-serif" }}>
+      <h1 className="title" style={{ fontSize: '2.3rem', margin: 8 }}>
         Your Electricity Usage & Payment
       </h1>
       <div className="description" style={{
-        color: '#444',
         minHeight: 55
       }}>
         {usageRecord
           ? (
             <>
-              <strong>Latest Usage:</strong> <span style={{ color: '#000' }}>{usageRecord.usage} kWh</span><br />
+              <strong>Latest Usage:</strong> <span>{usageRecord.usage} kWh</span><br />
               <strong>Payable Amount:</strong>{' '}
                 <span style={{ color: '#e87a41', fontWeight: 700, fontSize: '1.09em' }}>₹{usageRecord.payable}</span><br />
               <span style={{ color: '#919191', fontSize: '0.97em' }}>
@@ -241,9 +239,8 @@ function CustomerDashboard({ customer, usageRecord }) {
           background: '#e87a41',
           padding: '12px 24px',
           borderRadius: 7,
-          color: '#fff',
+          color: '#000',
           fontWeight: 500,
-          fontFamily: "'Montserrat', Arial, sans-serif",
           letterSpacing: 0.2
         }}>
           Notice: A new usage entry was added by your EB Officer!
@@ -257,21 +254,16 @@ function CustomerDashboard({ customer, usageRecord }) {
 function CustomerSelector({ customers, customerId, setCustomerId }) {
   return (
     <div className="panel" style={{
-      background: 'rgba(255,255,255,0.11)',
       margin: '32px 0 0',
-      textAlign: 'center',
-      fontFamily: "'Montserrat', Arial, sans-serif"
+      textAlign: 'center'
     }}>
       <span className="subtitle" style={{
         marginRight: 18,
-        color: '#111',
         fontWeight: 500
       }}>Select Customer:</span>
       <select className="btn"
         value={customerId}
-        style={{
-          background: '#caf0fe', color: '#000', fontWeight: 600
-        }}
+        style={{ fontWeight: 600 }}
         onChange={e => setCustomerId(e.target.value)}
         aria-label="select customer"
       >
