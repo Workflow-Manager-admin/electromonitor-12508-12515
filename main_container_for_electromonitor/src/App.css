@@ -183,6 +183,12 @@ body {
   }
 }
 
+/* Late payment reminder animation */
+@keyframes blinkme {
+  0% { filter: brightness(1) drop-shadow(0 0 6px #caf0feee);}
+  100% { filter: brightness(1.18) drop-shadow(0 0 25px #e845454d);}
+}
+
 table {
   border-radius: 4px;
   overflow: hidden;
