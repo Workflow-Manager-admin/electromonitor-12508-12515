@@ -47,15 +47,15 @@ function OfficerLoginForm({ onLogin, errorMsg }) {
       <div className="login-title subtitle" style={{ fontWeight: 800, fontSize: '1.6em', textAlign: "center" }}>EB Officer Login</div>
       <div style={{ display: "grid", gap: 18, marginTop: 22 }}>
         <div>
-          {/* Officer ID label: reduced font size */}
           <label
-            className="officer-label officer-label-id"
+            className="officer-label"
             style={{
-              fontWeight: 700,
-              fontSize: "0.98em",
+              fontWeight: 900,
+              fontSize: "1.28em",
+              letterSpacing: "0.02em",
               color: "#222",
-              letterSpacing: "0.01em",
-              lineHeight: "1.1",
+              lineHeight: "1.2",
+              marginBottom: 6
             }}
           >
             Officer ID:
@@ -67,27 +67,28 @@ function OfficerLoginForm({ onLogin, errorMsg }) {
             placeholder="Enter ID"
             required
             autoFocus
-            className="officer-input officer-input-id"
+            className="officer-input"
             style={{
-              fontSize: "1.23em",
-              padding: "17px 13px",
-              borderRadius: "9px",
-              width: "99%",
+              fontSize: "1.09em",
+              padding: "12px 10px",
+              borderRadius: "7px",
+              width: "100%",
               minWidth: 0,
-              marginTop: 2
+              marginTop: 2,
+              boxSizing: "border-box"
             }}
           />
         </div>
         <div>
-          {/* Name label: reduced font size */}
           <label
-            className="officer-label officer-label-name"
+            className="officer-label"
             style={{
-              fontWeight: 700,
-              fontSize: "0.98em",
+              fontWeight: 900,
+              fontSize: "1.28em",
+              letterSpacing: "0.02em",
               color: "#222",
-              letterSpacing: "0.01em",
-              lineHeight: "1.1",
+              lineHeight: "1.2",
+              marginBottom: 6
             }}
           >
             Name:
@@ -98,26 +99,50 @@ function OfficerLoginForm({ onLogin, errorMsg }) {
             onChange={e => setName(e.target.value)}
             placeholder="Enter Name"
             required
-            className="officer-input officer-input-name"
+            className="officer-input"
             style={{
-              fontSize: "1.23em",
-              padding: "17px 13px",
-              borderRadius: "9px",
-              width: "99%",
+              fontSize: "1.09em",
+              padding: "12px 10px",
+              borderRadius: "7px",
+              width: "100%",
               minWidth: 0,
-              marginTop: 2
+              marginTop: 2,
+              boxSizing: "border-box"
             }}
           />
         </div>
         <div>
-          <label style={{
-            fontWeight: 900,
-            fontSize: "1.36em",
-            letterSpacing: 0.022,
-            lineHeight: "1.2",
-            color: "#181818"
-          }}>Password:</label><br />
-          <input type="password" value={pwd} onChange={e => setPwd(e.target.value)} required placeholder="Password" />
+          <label
+            className="officer-label"
+            style={{
+              fontWeight: 900,
+              fontSize: "1.28em",
+              letterSpacing: "0.02em",
+              color: "#222",
+              lineHeight: "1.2",
+              marginBottom: 6
+            }}
+          >
+            Password:
+          </label>
+          <br />
+          <input
+            type="password"
+            value={pwd}
+            onChange={e => setPwd(e.target.value)}
+            required
+            placeholder="Password"
+            className="officer-input"
+            style={{
+              fontSize: "1.09em",
+              padding: "12px 10px",
+              borderRadius: "7px",
+              width: "100%",
+              minWidth: 0,
+              marginTop: 2,
+              boxSizing: "border-box"
+            }}
+          />
         </div>
         <button className="btn btn-large" style={{ marginTop: 14, fontWeight: 900 }}>Login</button>
       </div>
