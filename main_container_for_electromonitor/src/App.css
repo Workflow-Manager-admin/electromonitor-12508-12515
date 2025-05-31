@@ -200,6 +200,25 @@ body {
   vertical-align: sub;
 }
 
+/* --- NEW: Late Payment Section Headings/messages --- */
+.late-payment-heading {
+  color: #800000 !important;
+  font-weight: 900 !important;
+  font-size: 1.55rem !important;
+  letter-spacing: 0.015em;
+  margin-bottom: 9px;
+  font-family: 'Lucida Handwritten', cursive, sans-serif !important;
+}
+.late-payment-none-message {
+  color: #800000 !important;
+  font-weight: 900 !important;
+  font-size: 1.13rem !important;
+  margin-top: 6px;
+  margin-bottom: 5px;
+  letter-spacing: 0.005em;
+  font-family: 'Lucida Handwritten', cursive, sans-serif !important;
+}
+
 /* Responsive and other existing styles */
 @media (max-width: 750px) {
   .container {
