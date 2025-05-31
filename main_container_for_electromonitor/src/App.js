@@ -148,18 +148,17 @@ function OfficerUsageEntry({ customers, addUsage }) {
 // ----- Officer: Usage Table -----
 function OfficerUsageTable({ usageRecords, customers }) {
   return (
-    <div className="panel" style={{ marginTop: 20, background: 'linear-gradient(100deg, #f5fdff 0%, #e6f2ff 100%)' }}>
-      <div className="subtitle" style={{ color: '#000', margin: '6px 0 12px' }}>
+    <div className="panel" style={{ marginTop: 20 }}>
+      <div className="subtitle" style={{ margin: '6px 0 12px' }}>
         Customer Usage Overview
       </div>
       <table style={{
         width: '100%',
         borderCollapse: 'collapse',
-        fontSize: '1rem',
-        background: 'rgba(255,255,255,0.01)'
+        fontSize: '1rem'
       }}>
         <thead>
-          <tr style={{ background: '#caf0fe', color: '#000' }}>
+          <tr>
             <th style={{ padding: 8, borderBottom: '1px solid #919191' }}>Customer</th>
             <th style={{ padding: 8, borderBottom: '1px solid #919191' }}>Chip ID</th>
             <th style={{ padding: 8, borderBottom: '1px solid #919191' }}>Latest Usage (kWh)</th>
@@ -171,7 +170,7 @@ function OfficerUsageTable({ usageRecords, customers }) {
           {customers.map(customer => {
             const usage = usageRecords.find(u => u.customerId === customer.id);
             return (
-              <tr key={customer.id} style={{ fontFamily: "'Montserrat', Arial, sans-serif" }}>
+              <tr key={customer.id}>
                 <td style={{ padding: 8 }}>{customer.name}</td>
                 <td style={{ padding: 8 }}>{usage ? usage.chipId : '-'}</td>
                 <td style={{ padding: 8 }}>
