@@ -47,23 +47,15 @@ function OfficerLoginForm({ onLogin, errorMsg }) {
       <div className="login-title subtitle" style={{ fontWeight: 800, fontSize: '1.6em', textAlign: "center" }}>EB Officer Login</div>
       <div style={{ display: "grid", gap: 18, marginTop: 22 }}>
         <div>
-          <label style={{
-            fontWeight: 900,
-            fontSize: "1.36em",
-            letterSpacing: 0.022,
-            lineHeight: "1.2",
-            color: "#181818"
-          }}>Officer ID:</label><br />
+          <label className="officer-label-emphasis">
+            Officer ID:
+          </label><br />
           <input value={id} onChange={e => setId(e.target.value)} placeholder="Enter ID" required autoFocus />
         </div>
         <div>
-          <label style={{
-            fontWeight: 900,
-            fontSize: "1.36em",
-            letterSpacing: 0.022,
-            lineHeight: "1.2",
-            color: "#181818"
-          }}>Name:</label><br />
+          <label className="officer-label-emphasis">
+            Name:
+          </label><br />
           <input value={name} onChange={e => setName(e.target.value)} placeholder="Enter Name" required />
         </div>
         <div>
