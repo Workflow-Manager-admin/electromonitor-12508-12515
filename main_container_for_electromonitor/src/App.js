@@ -764,6 +764,12 @@ function App() {
     // eslint-disable-next-line
   }, [role, selectedCustomerId, usageRecords]);
 
+  // Pop-up state for error/notification
+  const [popup, setPopup] = useState('');
+  // Customer registration details state for validation
+  const [customerDetails, setCustomerDetails] = useState({ name: '', phone: '', chipId: '', usage: '' });
+  const [customerFormComplete, setCustomerFormComplete] = useState(false);
+
   // Role-based main view
   let mainView;
   if (!role) {
@@ -802,9 +808,9 @@ function App() {
         {/* Officer Late Payment Section */}
         <div className="panel late-payment-card-officer" style={{
           background: '#fff',
-          border: '2.5px solid #001f54', // Navy blue border
+          border: '2.5px solid #001f54',
           marginBottom: 24,
-          fontWeight: 700, // Make the section a bit visually bolder
+          fontWeight: 700,
           boxShadow: "0 2px 10px #001f5420",
         }}>
           <div className="late-payment-heading">
@@ -835,7 +841,7 @@ function App() {
                     <td style={{
                       padding:6,
                       fontWeight:900,
-                      color:'#800000', // Maroon
+                      color:'#800000',
                       fontSize: '1.08em',
                       letterSpacing: 0.01,
                       display:'flex',
@@ -868,77 +874,142 @@ function App() {
             </table>
           )}
         </div>
-        <OfficerUsageEntry customers={customers} addUsage={addUsage} />
+        <OfficerUsageEntry customers={customers} addUsage={(c, u, chip) => {
+          // Chip ID: alphanumeric, max 8
+          if (!chip.match(/^[a-z0-9]+$/i) || chip.length > 8) {
+            setPopup('Chip ID must be alphanumeric and ≤ 8 characters.');
+            return;
+          }
+          // Usage: numeric
+          if (isNaN(u) || u <= 0) {
+            setPopup('Usage must be a positive number.');
+            return;
+          }
+          setPopup('');
+          addUsage(c, u, chip);
+        }} />
         <OfficerUsageTable usageRecords={usageRecords} customers={customers} />
+        {popup && <NotificationBanner message={popup} onClose={()=>setPopup('')} />}
       </div>
     );
   } else if (role === 'customer') {
     const customer = customers.find(c => c.id === selectedCustomerId);
+    // Find all usage records for this customer sorted by updatedAt
+    const thisCustomerUsage = usageRecords.filter(r => r.customerId === selectedCustomerId && r.paymentStatus !== 'paid');
+    let previousDue = 0, newBill = 0;
+    if (thisCustomerUsage.length) {
+      // Here, for simplicity, assume previousDue = previous unpaid, newBill = most recent bill
+      if (thisCustomerUsage.length > 1) {
+        // Split by timestamp if multiple, but since record gets replaced in addUsage, logic supports sum
+        // We will assume payable before last usage is previousDue,
+        // newBill is the current latest addition (if we keep both)
+        previousDue = thisCustomerUsage.slice(0, -1).reduce((sum, r) => sum + r.payable, 0);
+        newBill = thisCustomerUsage[thisCustomerUsage.length - 1].payable;
+      } else {
+        previousDue = 0;
+        newBill = thisCustomerUsage[0].payable;
+      }
+    }
     const usage = usageRecords.find(r => r.customerId === selectedCustomerId);
 
-    mainView = (
-      <>
-        <div className="panel" style={{
-          background: 'linear-gradient(100deg, #caf0fe 0%, #e6f6fd 100%)',
-          color: '#000',
-          marginBottom: 28,
-          fontFamily: "'Montserrat', 'Poppins', Arial, sans-serif",
-        }}>
-          <h1 style={{
-            fontSize: '2.1rem',
-            color: '#222'
-          }}>
-            Customer Dashboard
-          </h1>
-          <div className="description" style={{
-            fontSize: '1.08em', color: '#555'
-          }}>
-            Check your electricity usage status, payables, and notifications.
-          </div>
-        </div>
-        <CustomerSelector customers={customers} customerId={selectedCustomerId} setCustomerId={setSelectedCustomerId} />
-
-        {/* Enhanced: Show bill summary, payment UI, and overdue/late reminders */}
-        {/* Payment + Reminder area */}
-        {usage && usage.paymentStatus !== "paid" && (
-          <>
-            <CustomerPaymentSection
-              usageRecord={usage}
-              onMarkPaid={handleMarkPaid}
-              paymentState={customerPaymentState}
-              setPaymentState={setCustomerPaymentState}
-            />
-          </>
-        )}
-        {/* Late Payment/Status Card (remains for visual cues, but only enable Mark as Paid if NOT marked paid) */}
-        <CustomerLatePaymentCard
-          usageRecord={usage}
-          onMarkPaid={() => handleMarkPaid(
-            (customerPaymentState.mode === "Online" && customerPaymentState.method)
-              ? customerPaymentState.method
-              : (customerPaymentState.mode || "offline")
-          )}
+    // Registration/Details Form: Only show once unless valid
+    if (!customerFormComplete) {
+      mainView = (
+        <CustomerDetailForm
+          value={customerDetails}
+          onChange={setCustomerDetails}
+          errorPopup={popup}
+          onSubmit={() => {
+            const { name, phone, chipId, usage } = customerDetails;
+            if (!name || !phone || !chipId || !usage) {
+              setPopup("All customer details are required.");
+              return;
+            }
+            if (!/^[0-9]{10}$/.test(phone)) {
+              setPopup("Phone number must be exactly 10 digits.");
+              return;
+            }
+            if (!/^[a-zA-Z0-9]{1,8}$/.test(chipId)) {
+              setPopup("Chip ID must be alphanumeric and ≤8 characters.");
+              return;
+            }
+            if (!/^\d+(\.\d+)?$/.test(usage) || Number(usage)<=0) {
+              setPopup("Usage must be a positive numeric value.");
+              return;
+            }
+            setPopup('');
+            setCustomerFormComplete(true);
+          }}
         />
-
-        <CustomerDashboard customer={customer} usageRecord={usage} />
-        {/* Prominent, visual reminder for late payments */}
-        {reminderMessage && (
-          <div style={{
-            marginTop: 20,
-            background: "#e84545",
-            color: "#fff",
-            padding: "20px 18px",
-            borderRadius: 12,
-            fontWeight: 600,
-            fontSize: "1.12rem",
-            boxShadow: "0 2px 12px #91919140",
-            animation: "blinkme 0.8s linear infinite alternate"
+      );
+    } else {
+      mainView = (
+        <>
+          <div className="panel" style={{
+            background: 'linear-gradient(100deg, #caf0fe 0%, #e6f6fd 100%)',
+            color: '#000',
+            marginBottom: 28,
+            fontFamily: "'Montserrat', 'Poppins', Arial, sans-serif",
           }}>
-            {reminderMessage}
+            <h1 style={{
+              fontSize: '2.1rem',
+              color: '#222'
+            }}>
+              Customer Dashboard
+            </h1>
+            <div className="description" style={{
+              fontSize: '1.08em', color: '#555'
+            }}>
+              Check your electricity usage status, payables, and notifications.
+            </div>
           </div>
-        )}
-      </>
-    );
+          <CustomerSelector customers={customers} customerId={selectedCustomerId} setCustomerId={setSelectedCustomerId} />
+
+          {/* Enhanced: Show bill summary, payment UI, and overdue/late reminders */}
+          {usage && usage.paymentStatus !== "paid" && (
+            <>
+              <CustomerPaymentSection
+                usageRecord={usage}
+                onMarkPaid={handleMarkPaid}
+                paymentState={customerPaymentState}
+                setPaymentState={setCustomerPaymentState}
+              />
+            </>
+          )}
+          <CustomerLatePaymentCard
+            usageRecord={usage}
+            onMarkPaid={() => handleMarkPaid(
+              (customerPaymentState.mode === "Online" && customerPaymentState.method)
+                ? customerPaymentState.method
+                : (customerPaymentState.mode || "offline")
+            )}
+          />
+
+          {/* Display bill details split as requested */}
+          <CustomerDashboard
+            customer={customer}
+            usageRecord={usage}
+            previousDue={previousDue}
+            newBill={newBill}
+          />
+          {reminderMessage && (
+            <div style={{
+              marginTop: 20,
+              background: "#e84545",
+              color: "#fff",
+              padding: "20px 18px",
+              borderRadius: 12,
+              fontWeight: 600,
+              fontSize: "1.12rem",
+              boxShadow: "0 2px 12px #91919140",
+              animation: "blinkme 0.8s linear infinite alternate"
+            }}>
+              {reminderMessage}
+            </div>
+          )}
+        </>
+      );
+    }
   }
 
   return (
@@ -967,7 +1038,12 @@ function App() {
                   fontWeight: 700,
                   color: '#fff'
                 }}
-                onClick={() => setRole('')}
+                onClick={() => {
+                  setRole('');
+                  setPopup('');
+                  setCustomerFormComplete(false);
+                  setCustomerDetails({ name: '', phone: '', chipId: '', usage: '' });
+                }}
               >
                 Switch Role
               </button>
@@ -976,6 +1052,7 @@ function App() {
         </div>
       </nav>
       <NotificationBanner message={notification} onClose={handleCloseNotification} />
+      {popup && <NotificationBanner message={popup} onClose={() => setPopup('')} />}
       <main>
         <div className="container" style={{ paddingTop: 100, paddingBottom: 48 }}>
           {mainView}
