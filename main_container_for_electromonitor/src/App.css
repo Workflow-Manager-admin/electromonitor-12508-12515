@@ -164,6 +164,43 @@ body {
   color: #000 !important;
 }
 
+/* === Custom LATE PAYMENT Styling overrides === */
+.late-payment-card,
+.late-payment-card-officer {
+  border: 3px solid #001f54 !important;
+  box-shadow: 0 2px 13px #001f5412;
+  font-weight: 900 !important;
+  background: #f9fbfd !important;
+  font-family: 'Lucida Handwritten', cursive, sans-serif !important;
+}
+.late-payment-card {
+  border-left: 10px solid #800000 !important;
+}
+.late-payment-card-officer {
+  /* for officer late payment record list */
+  background: #fff !important;
+  font-weight: 800 !important;
+}
+.late-payment-card,
+.late-payment-card-officer td,
+.late-payment-card-officer th {
+  font-family: 'Lucida Handwritten', cursive, sans-serif !important;
+}
+.late-payment-card-officer td {
+  font-weight: 700 !important;
+  color: #800000 !important;
+}
+.late-payment-warning {
+  color: #800000 !important;
+  font-weight: 900 !important;
+  margin-right: 7px;
+}
+.late-payment-warning-icon {
+  font-size: 1.13em;
+  vertical-align: sub;
+}
+
+/* Responsive and other existing styles */
 @media (max-width: 750px) {
   .container {
     padding: 0 8px;
