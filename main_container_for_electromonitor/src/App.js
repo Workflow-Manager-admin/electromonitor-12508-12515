@@ -211,8 +211,7 @@ function CustomerPaymentSection({
   paymentState,
   setPaymentState
 }) {
-  if (!usageRecord || usageRecord.paymentStatus === "paid") return null;
-
+  // Move all hooks to top level (fixing rules of hooks)
   const [showConfirm, setShowConfirm] = useState(false);
 
   const payment_methods = {
@@ -225,6 +224,16 @@ function CustomerPaymentSection({
     Offline: []
   };
 
+  // Default payment mode if not set
+  useEffect(() => {
+    if (!paymentState.mode) {
+      setPaymentState(ps => ({ ...ps, mode: 'Offline', method: '' }));
+    }
+    // eslint-disable-next-line
+  }, []);
+
+  if (!usageRecord || usageRecord.paymentStatus === "paid") return null;
+
   // paymentState example: { mode: "Online"|"Offline", method: "phonepe"|"pay"|... }
   // For control outside (send state up so parent preserves on re-render)
   function handleModeChange(e) {
@@ -236,14 +245,6 @@ function CustomerPaymentSection({
       method: newValue === 'Online' ? (ps.method || 'phonepe') : ''
     }));
   }
-
-  // Keep default selection
-  useEffect(() => {
-    if (!paymentState.mode) {
-      setPaymentState(ps => ({ ...ps, mode: 'Offline', method: '' }));
-    }
-    // eslint-disable-next-line
-  }, []);
 
   function handleMethodChange(e) {
     setPaymentState(ps => ({
