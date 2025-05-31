@@ -47,16 +47,67 @@ function OfficerLoginForm({ onLogin, errorMsg }) {
       <div className="login-title subtitle" style={{ fontWeight: 800, fontSize: '1.6em', textAlign: "center" }}>EB Officer Login</div>
       <div style={{ display: "grid", gap: 18, marginTop: 22 }}>
         <div>
-          <label className="officer-label-emphasis">
+          {/* Officer ID label: reduced font size */}
+          <label
+            className="officer-label officer-label-id"
+            style={{
+              fontWeight: 700,
+              fontSize: "0.98em",
+              color: "#222",
+              letterSpacing: "0.01em",
+              lineHeight: "1.1",
+            }}
+          >
             Officer ID:
-          </label><br />
-          <input value={id} onChange={e => setId(e.target.value)} placeholder="Enter ID" required autoFocus />
+          </label>
+          <br />
+          <input
+            value={id}
+            onChange={e => setId(e.target.value)}
+            placeholder="Enter ID"
+            required
+            autoFocus
+            className="officer-input officer-input-id"
+            style={{
+              fontSize: "1.23em",
+              padding: "17px 13px",
+              borderRadius: "9px",
+              width: "99%",
+              minWidth: 0,
+              marginTop: 2
+            }}
+          />
         </div>
         <div>
-          <label className="officer-label-emphasis">
+          {/* Name label: reduced font size */}
+          <label
+            className="officer-label officer-label-name"
+            style={{
+              fontWeight: 700,
+              fontSize: "0.98em",
+              color: "#222",
+              letterSpacing: "0.01em",
+              lineHeight: "1.1",
+            }}
+          >
             Name:
-          </label><br />
-          <input value={name} onChange={e => setName(e.target.value)} placeholder="Enter Name" required />
+          </label>
+          <br />
+          <input
+            value={name}
+            onChange={e => setName(e.target.value)}
+            placeholder="Enter Name"
+            required
+            className="officer-input officer-input-name"
+            style={{
+              fontSize: "1.23em",
+              padding: "17px 13px",
+              borderRadius: "9px",
+              width: "99%",
+              minWidth: 0,
+              marginTop: 2
+            }}
+          />
         </div>
         <div>
           <label style={{

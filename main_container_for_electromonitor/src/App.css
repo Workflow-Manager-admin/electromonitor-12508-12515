@@ -246,6 +246,25 @@ body {
   line-height: 1.2 !important;
 }
 
+/* EB Officer Login Customization: Smaller labels, larger inputs */
+.login-form .officer-label {
+  font-size: 0.98em !important;
+  font-weight: 700 !important;
+  color: #222 !important;
+  letter-spacing: 0.01em !important;
+  line-height: 1.1 !important;
+}
+
+.login-form .officer-input {
+  font-size: 1.23em !important;
+  padding: 17px 13px !important;
+  border-radius: 9px !important;
+  width: 99% !important;
+  min-width: 0 !important;
+  margin-top: 2px !important;
+  box-sizing: border-box !important;
+}
+
 /* Extra emphasis for Officer Login Officer ID and Name labels */
 .login-form .officer-label-emphasis {
   font-size: 2.1em !important;
