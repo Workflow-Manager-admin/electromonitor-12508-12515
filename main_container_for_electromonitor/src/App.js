@@ -729,76 +729,58 @@ function calculatePayable(usage) {
   return (100 * 3) + (200 * 5) + ((usage-300) * 7);
 }
 
-// ----- MainContainer -----
-/**
- * PUBLIC_INTERFACE
- * The main ElectroMonitor container providing role-based dashboards for EB officers and customers,
- * role selection (landing), and all UI per requirements.
- */
 function App() {
-  // State: role, mock customer/usage, notification
+  // State: role, login/credentials, customer/officer states
   const [role, setRole] = useState('');
+  const [officerAuth, setOfficerAuth] = useState(null); // {id, name, pwd}
+  const [customerAuth, setCustomerAuth] = useState(null); // {phone, name, pwd}
+  const [officerLoginErr, setOfficerLoginErr] = useState("");
+  const [customerLoginErr, setCustomerLoginErr] = useState("");
+
   const [customers] = useState(initialCustomers);
-  // Payable status can be "unpaid" or "paid"
-  const [usageRecords, setUsageRecords] = useState([]); // [{customerId, usage, payable, chipId, updatedAt, paymentStatus}]
+  const [usageRecords, setUsageRecords] = useState([]); // [{...}]
   const [notification, setNotification] = useState('');
   const [selectedCustomerId, setSelectedCustomerId] = useState(customers[0].id);
 
-  // Customer payment interface logic
-  // Track current customer payment UI state: payment mode (online/offline) and online method
-  const [customerPaymentState, setCustomerPaymentState] = useState({}); // shape: { mode, method }
-
-  // Reminders for customer late payment
+  // Payment
+  const [customerPaymentState, setCustomerPaymentState] = useState({}); // {mode, method}
+  // Late payment warning
   const [reminderMessage, setReminderMessage] = useState('');
   const reminderTimerRef = useRef(null);
 
-  // --- State-changing Handlers ---
   // PUBLIC_INTERFACE
   function addUsage(customerId, usage, chipId) {
     const payable = calculatePayable(usage);
     const now = new Date().toLocaleString('en-IN', { hour12: true });
     setUsageRecords(prev => {
-      // Refactor: If there is an unpaid previous record, combine unpaid with new
       const existing = prev.find(r => r.customerId === customerId && r.paymentStatus === 'unpaid');
       let updated = prev.filter(r => r.customerId !== customerId);
       if (existing) {
-        // Combine both usage and payables
         const totalUsage = existing.usage + usage;
         const totalPayable = existing.payable + payable;
-        updated.push({
-          customerId,
-          usage: totalUsage,
-          payable: totalPayable,
-          chipId,
-          updatedAt: now,
-          paymentStatus: 'unpaid'
-        });
+        updated.push({ customerId, usage: totalUsage, payable: totalPayable, chipId, updatedAt: now, paymentStatus: 'unpaid' });
       } else {
         updated.push({ customerId, usage, payable, chipId, updatedAt: now, paymentStatus: 'unpaid' });
       }
       return updated;
     });
-    // Notification: Inform customer
+    // Customer notification
     const customer = customers.find(c => c.id === customerId);
     setNotification(
-      `Notification: ${customer.name} - New usage data entered. Payable Amount is ₹${payable}${
-        (() => {
-          // If there is an unpaid balance, notify about the sum as well
-          const prevRec = usageRecords.find(
-            r => r.customerId === customerId && r.paymentStatus === 'unpaid'
-          );
-          if (prevRec) {
-            const sum = prevRec.payable + payable;
-            return ` (Total Outstanding: ₹${sum})`;
-          }
-          return '';
-        })()
-      }.`
+      `Notification: ${customer.name} - New usage data entered. Payable Amount is ₹${payable}${(() => {
+        const prevRec = usageRecords.find(
+          r => r.customerId === customerId && r.paymentStatus === 'unpaid'
+        );
+        if (prevRec) {
+          const sum = prevRec.payable + payable;
+          return ` (Total Outstanding: ₹${sum})`;
+        }
+        return '';
+      })()}.`
     );
   }
 
-  // Updated payment handler: only set paid after explicit payment confirmation
-  // type describes how paid ("offline"/"online"/<method>)
+  // On paid
   function handleMarkPaid(type = "offline") {
     setUsageRecords(records =>
       records.map(r =>
@@ -808,17 +790,11 @@ function App() {
       )
     );
     setReminderMessage('');
-    // Reset payment UI
     setCustomerPaymentState({});
   }
+  function handleCloseNotification() { setNotification(''); }
 
-  // Handler: Dismiss notification
-  // PUBLIC_INTERFACE
-  function handleCloseNotification() {
-    setNotification('');
-  }
-
-  // Reminders: Customer late payment
+  // Late payment reminder for customer only
   useEffect(() => {
     if (!role || role !== 'customer') {
       setReminderMessage('');
@@ -835,7 +811,6 @@ function App() {
       setReminderMessage(
         `⚠️ Late Payment Reminder: You have an overdue amount of ₹${usage.payable}. Please pay immediately!`
       );
-      // Repeated reminders
       if (reminderTimerRef.current) clearInterval(reminderTimerRef.current);
       reminderTimerRef.current = setInterval(() => {
         setReminderMessage(
@@ -858,10 +833,7 @@ function App() {
       setReminderMessage('');
       if (reminderTimerRef.current) clearInterval(reminderTimerRef.current);
     }
-    // Cleanup on unmount/role switch
-    return () => {
-      if (reminderTimerRef.current) clearInterval(reminderTimerRef.current);
-    };
+    return () => { if (reminderTimerRef.current) clearInterval(reminderTimerRef.current); };
     // eslint-disable-next-line
   }, [role, selectedCustomerId, usageRecords]);
 
@@ -871,256 +843,191 @@ function App() {
   const [customerDetails, setCustomerDetails] = useState({ name: '', phone: '', chipId: '', usage: '' });
   const [customerFormComplete, setCustomerFormComplete] = useState(false);
 
-  // Role-based main view
+  // --- MAIN UI STATE FLOW LOGIC ---
+
   let mainView;
   if (!role) {
-    mainView = <RoleSelector setRole={setRole} />;
-  } else if (role === 'officer') {
-    // Late payments for officer: collect list
-    const lateList = customers
-      .map(c => {
-        const usage = usageRecords.find(r => r.customerId === c.id);
-        return usage && isLatePayment(usage)
-          ? {
-              ...c,
-              amount: usage.payable,
-              overdueDays: latePaymentOverdueDays(usage),
-              dueDate: addDays(usage.updatedAt, LATE_PAYMENT_PERIOD_DAYS).toLocaleDateString('en-IN'),
-              updatedAt: usage.updatedAt,
-            }
-          : null;
-      })
-      .filter(Boolean);
-    mainView = (
-      <div>
-        <div className="panel" style={{
-          background: 'linear-gradient(120deg, #caf0fe 0%, #e6f3fa 100%)',
-          marginBottom: 30,
-          fontFamily: "'Montserrat', 'Poppins', Arial, sans-serif",
-          fontWeight: 500,
-          color: '#1a1a1a'
-        }}>
-          <h1 style={{margin: 0, color: '#222'}}>EB Officer Dashboard</h1>
-          <div className="description" style={{color: '#555'}}>
-            You can view customer electricity records and enter chip-based usage data below.
-          </div>
-        </div>
-
-        {/* Officer Late Payment Section */}
-        <div className="panel late-payment-card-officer" style={{
-          background: '#fff',
-          border: '2.5px solid #001f54',
-          marginBottom: 24,
-          fontWeight: 700,
-          boxShadow: "0 2px 10px #001f5420",
-        }}>
-          <div className="late-payment-heading">
-            Late Payment Records
-          </div>
-          {lateList.length === 0 ? (
-            <div className="late-payment-none-message">No late payments at this time.</div>
-          ) : (
-            <table style={{
-              width: '100%',
-              fontSize: '1rem',
-              borderCollapse: 'collapse',
-              marginTop: 5,
-              fontWeight: 700,
-            }}>
-              <thead>
-                <tr style={{background:'#001f54'}}>
-                  <th style={{padding:6, background:'#001f54', color:'#fff', fontWeight:700}}>Customer</th>
-                  <th style={{padding:6, background:'#001f54', color:'#fff', fontWeight:700}}>Overdue Amount</th>
-                  <th style={{padding:6, background:'#001f54', color:'#fff', fontWeight:700}}>Due Date</th>
-                  <th style={{padding:6, background:'#001f54', color:'#fff', fontWeight:700}}>Overdue (days)</th>
-                  <th style={{padding:6, background:'#001f54', color:'#fff', fontWeight:700}}>Last Updated</th>
-                </tr>
-              </thead>
-              <tbody>
-                {lateList.map(entry => (
-                  <tr key={entry.id}>
-                    <td style={{
-                      padding:6,
-                      fontWeight:900,
-                      color:'#800000',
-                      fontSize: '1.08em',
-                      letterSpacing: 0.01,
-                      display:'flex',
-                      alignItems:'center',
-                      gap: '0.6em'
-                    }}>
-                      <span style={{fontSize:'1.1em', verticalAlign:'sub'}}>⚠️</span>
-                      {entry.name}
-                    </td>
-                    <td style={{
-                      padding:6,
-                      color:'#800000',
-                      fontWeight: 900,
-                      fontSize: '1.10em'
-                    }}>
-                      ₹{entry.amount}
-                    </td>
-                    <td style={{padding:6, color:'#800000', fontWeight:700}}>{entry.dueDate}</td>
-                    <td style={{padding:6, color:'#800000', fontWeight:900}}>
-                      {entry.overdueDays}
-                    </td>
-                    <td style={{
-                      padding:6,
-                      color:'#555',
-                      fontWeight:600
-                    }}>{entry.updatedAt}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
-        </div>
-        <OfficerUsageEntry customers={customers} addUsage={(c, u, chip) => {
-          // Chip ID: alphanumeric, max 8
-          if (!chip.match(/^[a-z0-9]+$/i) || chip.length > 8) {
-            setPopup('Chip ID must be alphanumeric and ≤ 8 characters.');
-            return;
-          }
-          // Usage: numeric
-          if (isNaN(u) || u <= 0) {
-            setPopup('Usage must be a positive number.');
-            return;
-          }
-          setPopup('');
-          addUsage(c, u, chip);
-        }} />
-        <OfficerUsageTable usageRecords={usageRecords} customers={customers} />
-        {popup && <NotificationBanner message={popup} onClose={()=>setPopup('')} />}
-      </div>
-    );
-  } else if (role === 'customer') {
-    const customer = customers.find(c => c.id === selectedCustomerId);
-    // Find all usage records for this customer sorted by updatedAt
-    const thisCustomerUsage = usageRecords.filter(r => r.customerId === selectedCustomerId && r.paymentStatus !== 'paid');
-    let previousDue = 0, newBill = 0;
-    if (thisCustomerUsage.length) {
-      // Here, for simplicity, assume previousDue = previous unpaid, newBill = most recent bill
-      if (thisCustomerUsage.length > 1) {
-        // Split by timestamp if multiple, but since record gets replaced in addUsage, logic supports sum
-        // We will assume payable before last usage is previousDue,
-        // newBill is the current latest addition (if we keep both)
-        previousDue = thisCustomerUsage.slice(0, -1).reduce((sum, r) => sum + r.payable, 0);
-        newBill = thisCustomerUsage[thisCustomerUsage.length - 1].payable;
-      } else {
-        previousDue = 0;
-        newBill = thisCustomerUsage[0].payable;
-      }
-    }
-    const usage = usageRecords.find(r => r.customerId === selectedCustomerId);
-
-    // Registration/Details Form: Only show once unless valid
-    if (!customerFormComplete) {
+    mainView = <RoleSelector setRole={role => { setRole(role); setOfficerAuth(null); setCustomerAuth(null); setOfficerLoginErr(""); setCustomerLoginErr(""); setCustomerFormComplete(false); setCustomerDetails({name:'', phone:'', chipId:'', usage:''}); }} />;
+  }
+  else if (role === 'officer') {
+    // Officer login required
+    if (!officerAuth) {
       mainView = (
-        <CustomerDetailForm
-          value={customerDetails}
-          onChange={setCustomerDetails}
-          errorPopup={popup}
-          onSubmit={() => {
-            const { name, phone, chipId, usage } = customerDetails;
-            if (!name || !phone || !chipId || !usage) {
-              setPopup("All customer details are required.");
-              return;
-            }
-            if (!/^[0-9]{10}$/.test(phone)) {
-              setPopup("Phone number must be exactly 10 digits.");
-              return;
-            }
-            if (!/^[a-zA-Z0-9]{1,8}$/.test(chipId)) {
-              setPopup("Chip ID must be alphanumeric and ≤8 characters.");
-              return;
-            }
-            if (!/^\d+(\.\d+)?$/.test(usage) || Number(usage)<=0) {
-              setPopup("Usage must be a positive numeric value.");
-              return;
-            }
-            setPopup('');
-            setCustomerFormComplete(true);
+        <OfficerLoginForm
+          onLogin={(cred, err) => {
+            if (err) return setOfficerLoginErr(err);
+            // officerId+name entered, accept any mock
+            setOfficerAuth(cred);
+            setOfficerLoginErr("");
           }}
+          errorMsg={officerLoginErr}
         />
       );
     } else {
       mainView = (
-        <>
+        <div>
           <div className="panel" style={{
-            background: 'linear-gradient(100deg, #caf0fe 0%, #e6f6fd 100%)',
-            color: '#000',
-            marginBottom: 28,
+            background: 'linear-gradient(120deg, #caf0fe 0%, #e6f3fa 100%)',
+            marginBottom: 30,
             fontFamily: "'Montserrat', 'Poppins', Arial, sans-serif",
+            fontWeight: 500,
+            color: '#1a1a1a'
           }}>
-            <h1 style={{
-              fontSize: '2.1rem',
-              color: '#222'
-            }}>
-              Customer Dashboard
-            </h1>
-            <div className="description" style={{
-              fontSize: '1.08em', color: '#555'
-            }}>
-              Check your electricity usage status, payables, and notifications.
+            <h1 style={{ margin: 0, color: '#222' }}>EB Officer Dashboard</h1>
+            <div className="description" style={{ color: '#555' }}>
+              You can view customer electricity records and enter chip-based usage data below.
             </div>
           </div>
-          <CustomerSelector customers={customers} customerId={selectedCustomerId} setCustomerId={setSelectedCustomerId} />
+          {/* Officer usage entry & table (no 'late payment records') */}
+          <OfficerUsageEntry customers={customers} addUsage={(c, u, chip) => {
+            if (!chip.match(/^[a-z0-9]+$/i) || chip.length > 8) { setPopup('Chip ID must be alphanumeric and ≤ 8 characters.'); return; }
+            if (isNaN(u) || u <= 0) { setPopup('Usage must be a positive number.'); return; }
+            setPopup(''); addUsage(c, u, chip);
+          }} />
+          <OfficerUsageTable usageRecords={usageRecords} customers={customers} />
+          {/* ENLARGED Customer details data for Officer - show all fields */}
+          {!customerFormComplete &&
+            <CustomerDetailForm
+              value={customerDetails}
+              onChange={setCustomerDetails}
+              errorPopup={popup}
+              onSubmit={() => {
+                const { name, phone, chipId, usage } = customerDetails;
+                if (!name || !phone || !chipId || !usage) { setPopup("All customer details are required."); return; }
+                if (!/^[0-9]{10}$/.test(phone)) { setPopup("Phone number must be exactly 10 digits."); return; }
+                if (!/^[a-zA-Z0-9]{1,8}$/.test(chipId)) { setPopup("Chip ID must be alphanumeric and ≤8 characters."); return; }
+                if (!/^\d+(\.\d+)?$/.test(usage) || Number(usage)<=0) { setPopup("Usage must be a positive numeric value."); return; }
+                setPopup(''); setCustomerFormComplete(true);
+              }}
+              showChip={true}
+              showUsage={true}
+            />
+          }
+          {popup && <NotificationBanner message={popup} onClose={() => setPopup('')} />}
+        </div>
+      );
+    }
+  }
+  else if (role === 'customer') {
+    // Customer login required
+    if (!customerAuth) {
+      mainView = (
+        <CustomerLoginForm
+          onLogin={(cred, err) => {
+            if (err) return setCustomerLoginErr(err);
+            setCustomerAuth(cred);
+            setCustomerLoginErr("");
+          }}
+          errorMsg={customerLoginErr}
+        />
+      );
+    } else {
+      const customer = customers.find(c => c.id === selectedCustomerId);
+      const thisCustomerUsage = usageRecords.filter(r => r.customerId === selectedCustomerId && r.paymentStatus !== 'paid');
+      let previousDue = 0, newBill = 0;
+      if (thisCustomerUsage.length) {
+        if (thisCustomerUsage.length > 1) {
+          previousDue = thisCustomerUsage.slice(0, -1).reduce((sum, r) => sum + r.payable, 0);
+          newBill = thisCustomerUsage[thisCustomerUsage.length - 1].payable;
+        } else {
+          previousDue = 0;
+          newBill = thisCustomerUsage[0].payable;
+        }
+      }
+      const usage = usageRecords.find(r => r.customerId === selectedCustomerId);
 
-          {/* Enhanced: Show bill summary, payment UI, and overdue/late reminders */}
-          {usage && usage.paymentStatus !== "paid" && (
-            <>
+      // Customer Detail Form: Only for new registrations, no chip/usage fields
+      if (!customerFormComplete) {
+        mainView = (
+          <CustomerDetailForm
+            value={customerDetails}
+            onChange={setCustomerDetails}
+            errorPopup={popup}
+            onSubmit={() => {
+              const { name, phone } = customerDetails;
+              if (!name || !phone) { setPopup("All customer details are required."); return; }
+              if (!/^[0-9]{10}$/.test(phone)) { setPopup("Phone number must be exactly 10 digits."); return; }
+              setPopup(''); setCustomerFormComplete(true);
+            }}
+            showChip={false}
+            showUsage={false}
+          />
+        );
+      } else {
+        mainView = (
+          <>
+            <div className="panel" style={{
+              background: 'linear-gradient(100deg, #caf0fe 0%, #e6f6fd 100%)',
+              color: '#000',
+              marginBottom: 28,
+              fontFamily: "'Montserrat', 'Poppins', Arial, sans-serif",
+            }}>
+              <h1 style={{
+                fontSize: '2.1rem',
+                color: '#222'
+              }}>
+                Customer Dashboard
+              </h1>
+              <div className="description" style={{
+                fontSize: '1.08em', color: '#555'
+              }}>
+                Check your electricity usage status, payables, and notifications.
+              </div>
+            </div>
+            <CustomerSelector customers={customers} customerId={selectedCustomerId} setCustomerId={setSelectedCustomerId} />
+
+            {/* Bill/payment UI/late payment only for customers */}
+            {usage && usage.paymentStatus !== "paid" &&
               <CustomerPaymentSection
                 usageRecord={usage}
                 onMarkPaid={handleMarkPaid}
                 paymentState={customerPaymentState}
                 setPaymentState={setCustomerPaymentState}
               />
-            </>
-          )}
-          <CustomerLatePaymentCard
-            usageRecord={usage}
-            onMarkPaid={() => handleMarkPaid(
-              (customerPaymentState.mode === "Online" && customerPaymentState.method)
-                ? customerPaymentState.method
-                : (customerPaymentState.mode || "offline")
+            }
+            <CustomerLatePaymentCard
+              usageRecord={usage}
+              onMarkPaid={() => handleMarkPaid(
+                (customerPaymentState.mode === "Online" && customerPaymentState.method)
+                  ? customerPaymentState.method
+                  : (customerPaymentState.mode || "offline")
+              )}
+            />
+            <CustomerDashboard
+              customer={customer}
+              usageRecord={usage}
+              previousDue={previousDue}
+              newBill={newBill}
+            />
+            {reminderMessage && (
+              <div style={{
+                marginTop: 20,
+                background: "#e84545",
+                color: "#fff",
+                padding: "20px 18px",
+                borderRadius: 12,
+                fontWeight: 600,
+                fontSize: "1.12rem",
+                boxShadow: "0 2px 12px #91919140",
+                animation: "blinkme 0.8s linear infinite alternate"
+              }}>
+                {reminderMessage}
+              </div>
             )}
-          />
-
-          {/* Display bill details split as requested */}
-          <CustomerDashboard
-            customer={customer}
-            usageRecord={usage}
-            previousDue={previousDue}
-            newBill={newBill}
-          />
-          {reminderMessage && (
-            <div style={{
-              marginTop: 20,
-              background: "#e84545",
-              color: "#fff",
-              padding: "20px 18px",
-              borderRadius: 12,
-              fontWeight: 600,
-              fontSize: "1.12rem",
-              boxShadow: "0 2px 12px #91919140",
-              animation: "blinkme 0.8s linear infinite alternate"
-            }}>
-              {reminderMessage}
-            </div>
-          )}
-        </>
-      );
+          </>
+        );
+      }
     }
   }
 
+  // NAV + Main area
   return (
     <div className="app">
-      {/* Navbar */}
       <nav className="navbar">
         <div className="container">
           <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
             <div className="logo">
-              <span className="logo-symbol" style={{color: '#919191'}}>⚡</span> ElectroMonitor
+              <span className="logo-symbol" style={{ color: '#919191' }}>⚡</span> ElectroMonitor
               <span style={{
                 fontWeight: 400,
                 fontSize: '1rem',
@@ -1141,6 +1048,10 @@ function App() {
                 }}
                 onClick={() => {
                   setRole('');
+                  setOfficerAuth(null);
+                  setCustomerAuth(null);
+                  setOfficerLoginErr("");
+                  setCustomerLoginErr("");
                   setPopup('');
                   setCustomerFormComplete(false);
                   setCustomerDetails({ name: '', phone: '', chipId: '', usage: '' });
