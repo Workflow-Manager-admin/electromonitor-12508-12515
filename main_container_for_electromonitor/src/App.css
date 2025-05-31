@@ -91,7 +91,7 @@ body {
 
 /* Prominent welcome message style for the role selector */
 .welcome-message {
-  font-size: 4rem;
+  font-size: 2.5rem;
   font-weight: 800;
   margin-bottom: 0.18em;
   color: var(--kavia-orange) !important;
