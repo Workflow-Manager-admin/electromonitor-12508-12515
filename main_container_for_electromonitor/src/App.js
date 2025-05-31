@@ -29,6 +29,78 @@ function NotificationBanner({ message, onClose }) {
   );
 }
 
+/**
+ * Officer Login Form: id, name, password; onSuccess triggers callback with login values.
+ */
+function OfficerLoginForm({ onLogin, errorMsg }) {
+  const [id, setId] = useState('');
+  const [name, setName] = useState('');
+  const [pwd, setPwd] = useState('');
+  // PUBLIC_INTERFACE
+  function handleLogin(e) {
+    e.preventDefault();
+    if (!id.trim() || !name.trim() || !pwd.trim()) return onLogin(null, "All fields are required.");
+    // In prod: add real validation. For now, accept any non-empty.
+    onLogin({ id, name, pwd }, "");
+  }
+  return (
+    <form className="login-form panel" onSubmit={handleLogin} style={{ maxWidth: 380, margin: '0 auto', marginTop: 50 }}>
+      <div className="login-title subtitle" style={{ fontWeight: 800, fontSize: '1.6em', textAlign: "center" }}>EB Officer Login</div>
+      <div style={{ display: "grid", gap: 18, marginTop: 22 }}>
+        <div>
+          <label style={{ fontWeight: 600 }}>Officer ID:</label><br />
+          <input value={id} onChange={e => setId(e.target.value)} placeholder="Enter ID" required autoFocus />
+        </div>
+        <div>
+          <label style={{ fontWeight: 600 }}>Name:</label><br />
+          <input value={name} onChange={e => setName(e.target.value)} placeholder="Enter Name" required />
+        </div>
+        <div>
+          <label style={{ fontWeight: 600 }}>Password:</label><br />
+          <input type="password" value={pwd} onChange={e => setPwd(e.target.value)} required placeholder="Password" />
+        </div>
+        <button className="btn btn-large" style={{ marginTop: 14, fontWeight: 700 }}>Login</button>
+      </div>
+      {errorMsg && <div style={{ marginTop: 15, color: '#800000', fontWeight: 700 }}>{errorMsg}</div>}
+    </form>
+  );
+}
+/**
+ * Customer Login Form: phone, name, password.
+ */
+function CustomerLoginForm({ onLogin, errorMsg }) {
+  const [phone, setPhone] = useState('');
+  const [name, setName] = useState('');
+  const [pwd, setPwd] = useState('');
+  // PUBLIC_INTERFACE
+  function handleLogin(e) {
+    e.preventDefault();
+    if (!phone.trim() || !name.trim() || !pwd.trim()) return onLogin(null, "All fields are required.");
+    if (!/^[0-9]{10}$/.test(phone)) return onLogin(null, "Phone number must be exactly 10 digits.");
+    onLogin({ phone, name, pwd }, "");
+  }
+  return (
+    <form className="login-form panel" onSubmit={handleLogin} style={{ maxWidth: 380, margin: '0 auto', marginTop: 50 }}>
+      <div className="login-title subtitle" style={{ fontWeight: 800, fontSize: '1.6em', textAlign: "center" }}>Customer Login</div>
+      <div style={{ display: "grid", gap: 18, marginTop: 22 }}>
+        <div>
+          <label style={{ fontWeight: 600 }}>Phone Number:</label><br />
+          <input value={phone} onChange={e => setPhone(e.target.value.replace(/\D/,''))} maxLength={10} minLength={10} inputMode="numeric" required placeholder="10 digits" />
+        </div>
+        <div>
+          <label style={{ fontWeight: 600 }}>Name:</label><br />
+          <input value={name} onChange={e => setName(e.target.value)} required placeholder="Enter Name" />
+        </div>
+        <div>
+          <label style={{ fontWeight: 600 }}>Password:</label><br />
+          <input type="password" value={pwd} onChange={e => setPwd(e.target.value)} required placeholder="Password" />
+        </div>
+        <button className="btn btn-large" style={{ marginTop: 14, fontWeight: 700 }}>Login</button>
+      </div>
+      {errorMsg && <div style={{ marginTop: 15, color: '#800000', fontWeight: 700 }}>{errorMsg}</div>}
+    </form>
+  );
+}
 // ----- Helper: Role Selector -----
 function RoleSelector({ setRole }) {
   return (
