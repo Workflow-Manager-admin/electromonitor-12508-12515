@@ -277,7 +277,44 @@ function CustomerSelector({ customers, customerId, setCustomerId }) {
 
 
 
-// ----- In-Memory Data -----
+const LATE_PAYMENT_PERIOD_DAYS = 2; // Payment is due 2 days after usage update
+const LATE_PAYMENT_REMINDER_INTERVAL = 7000; // ms between reminders
+
+// Utility: Return date string X days in past
+function daysAgoString(days) {
+  const d = new Date(Date.now() - days * 24 * 60 * 60 * 1000);
+  return d.toLocaleString('en-IN', { hour12: true });
+}
+
+// Utility: Add days to date string
+function addDays(dateString, days) {
+  const d = new Date(dateString);
+  d.setDate(d.getDate() + days);
+  return d;
+}
+
+// PUBLIC_INTERFACE
+function isLatePayment(record) {
+  // record: { updatedAt: string, paymentStatus: 'paid'|'unpaid' }
+  if (!record || record.paymentStatus === 'paid') return false;
+  const dueDate = addDays(record.updatedAt, LATE_PAYMENT_PERIOD_DAYS);
+  return new Date() > dueDate;
+}
+// PUBLIC_INTERFACE
+function latePaymentOverdueDays(record) {
+  if (!record || record.paymentStatus === 'paid') return 0;
+  const dueDate = addDays(record.updatedAt, LATE_PAYMENT_PERIOD_DAYS);
+  const diff = (new Date() - dueDate) / (1000 * 60 * 60 * 24);
+  return diff > 0 ? Math.floor(diff) : 0;
+}
+// PUBLIC_INTERFACE
+function isPaymentDueSoon(record) {
+  if (!record || record.paymentStatus === 'paid') return false;
+  const dueDate = addDays(record.updatedAt, LATE_PAYMENT_PERIOD_DAYS);
+  const now = new Date();
+  return now < dueDate && (dueDate - now < 2 * 24 * 60 * 60 * 1000);
+}
+
 const initialCustomers = [
   { id: 'c1', name: 'Arun Kumar' },
   { id: 'c2', name: 'Sneha Bhat' },
@@ -302,7 +339,7 @@ function App() {
   // State: role, mock customer/usage, notification
   const [role, setRole] = useState('');
   const [customers] = useState(initialCustomers);
-  const [usageRecords, setUsageRecords] = useState([]); // [{customerId, usage, payable, chipId, updatedAt}]
+  const [usageRecords, setUsageRecords] = useState([]); // [{customerId, usage, payable, chipId, updatedAt, paymentStatus}]
   const [notification, setNotification] = useState('');
   const [selectedCustomerId, setSelectedCustomerId] = useState(customers[0].id);
 
