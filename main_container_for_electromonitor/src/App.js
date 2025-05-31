@@ -69,22 +69,41 @@ function RoleSelector({ setRole }) {
   );
 }
 
-// ----- Officer: Data Entry & Usage Table -----
+/*
+ * OfficerUsageEntry - With strict ChipID, Usage validation.
+ * Displays any error in a pop-up not just inline.
+ * Chip ID: alphanumeric (max 8 chars), Usage: numeric (>0)
+ */
 function OfficerUsageEntry({ customers, addUsage }) {
   const [customerId, setCustomerId] = useState(customers.length > 0 ? customers[0].id : '');
   const [usage, setUsage] = useState('');
   const [chipId, setChipId] = useState('');
   const [error, setError] = useState('');
+  const [popup, setPopup] = useState('');
 
   // PUBLIC_INTERFACE
   function handleAddUsage(e) {
     e.preventDefault();
+    // Validation
     const usageNum = parseFloat(usage);
-    if (!customerId || isNaN(usageNum) || usageNum <= 0 || !chipId.trim()) {
-      setError('All fields are required and usage must be a positive number.');
+    if (!customerId || !usage || !chipId.trim()) {
+      setPopup('All fields are required.');
+      return;
+    }
+    if (isNaN(usageNum) || usageNum <= 0) {
+      setPopup('Usage must be a positive number.');
+      return;
+    }
+    if (!/^[a-z0-9]+$/i.test(chipId)) {
+      setPopup('Chip ID must be alphanumeric only.');
+      return;
+    }
+    if (chipId.length > 8) {
+      setPopup('Chip ID must be at most 8 characters.');
       return;
     }
     setError('');
+    setPopup('');
     addUsage(customerId, usageNum, chipId);
     setUsage('');
     setChipId('');
