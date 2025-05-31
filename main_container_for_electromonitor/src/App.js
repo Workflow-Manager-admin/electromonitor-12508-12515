@@ -52,7 +52,8 @@ function RoleSelector({ setRole }) {
           <button className="btn btn-large" style={{
             border: '2px solid #919191',
             margin: '0 18px',
-            fontWeight: 600
+            fontWeight: 600,
+            color: '#fff'
           }} onClick={() => setRole('officer')}>
             <span role="img" aria-label="Officer">🦺</span> EB Officer
           </button>
@@ -137,7 +138,8 @@ function OfficerUsageEntry({ customers, addUsage }) {
         </div>
         <button className="btn" style={{
           background: 'var(--kavia-orange)',
-          fontWeight: 600
+          fontWeight: 600,
+          color: '#fff'
         }} type="submit">Add Usage</button>
       </form>
       {error && <div style={{ color: '#919191', marginTop: 12 }}>{error}</div>}
@@ -402,7 +404,8 @@ function App() {
                 style={{
                   border: '1.5px solid #919191',
                   marginLeft: 12,
-                  fontWeight: 700
+                  fontWeight: 700,
+                  color: '#fff'
                 }}
                 onClick={() => setRole('')}
               >
