@@ -38,7 +38,7 @@ function RoleSelector({ setRole }) {
       borderRadius: 14
     }}>
       <div>
-        <div className="subtitle" style={{ fontSize: '1.2rem', fontWeight: 500 }}>
+        <div className="welcome-message">
           Welcome to ElectroMonitor
         </div>
         <h1 className="title" style={{ fontWeight: 700, fontSize: '2.45rem', marginBottom: 8 }}>
