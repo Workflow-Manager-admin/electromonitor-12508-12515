@@ -5,17 +5,12 @@ import './App.css';
 function NotificationBanner({ message, onClose }) {
   if (!message) return null;
   return (
-    <div style={{
-      background: 'var(--kavia-orange)',
-      color: '#fff',
-      padding: '16px',
-      textAlign: 'center',
+    <div className="notification-banner" style={{
       position: 'fixed',
       top: '64px',
       left: 0,
       width: '100%',
-      zIndex: 1000,
-      fontFamily: "'Poppins', 'Montserrat', Arial, sans-serif"
+      zIndex: 1000
     }}>
       <span>{message}</span>
       <button
@@ -23,9 +18,9 @@ function NotificationBanner({ message, onClose }) {
         onClick={onClose}
         style={{
           marginLeft: 24,
-          background: 'rgba(0,0,0,0.07)',
-          color: '#fff',
-          border: '1px solid #fff'
+          background: 'var(--kavia-orange)',
+          border: '1px solid #000',
+          color: '#000'
         }}
       >
         Close
