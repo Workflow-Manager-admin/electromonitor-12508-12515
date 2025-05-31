@@ -408,8 +408,80 @@ function CustomerPaymentSection({
   );
 }
 
+// ----- Customer Registration/Details Form -----
+function CustomerDetailForm({ value, onChange, onSubmit, errorPopup }) {
+  const [name, setName] = useState(value.name || '');
+  const [phone, setPhone] = useState(value.phone || '');
+  const [chipId, setChipId] = useState(value.chipId || '');
+  const [usage, setUsage] = useState(value.usage || '');
+
+  useEffect(() => {
+    onChange({ name, phone, chipId, usage });
+    // eslint-disable-next-line
+  }, [name, phone, chipId, usage]);
+
+  return (
+    <form className="panel" style={{marginBottom:22, marginTop:10, maxWidth:550, marginLeft:'auto', marginRight:'auto'}} onSubmit={e => {e.preventDefault(); onSubmit();}}>
+      <div className="subtitle" style={{fontWeight:700, marginBottom:12}}>Customer Details</div>
+      <div style={{display:'flex', flexWrap:'wrap', gap:18, alignItems:'center', justifyContent:'center'}}>
+        <div>
+          <label style={{fontWeight:600}}>Name:</label><br/>
+          <input
+            value={name}
+            onChange={e => setName(e.target.value)}
+            required
+            maxLength={40}
+            style={{width:150}}
+            placeholder="e.g. Arun Kumar"
+          />
+        </div>
+        <div>
+          <label style={{fontWeight:600}}>Phone #:</label><br/>
+          <input
+            value={phone}
+            onChange={e => setPhone(e.target.value.replace(/\D/,''))}
+            required
+            maxLength={10}
+            minLength={10}
+            pattern="^[0-9]{10}$"
+            style={{width:120}}
+            placeholder="10 digits"
+            inputMode="numeric"
+          />
+        </div>
+        <div>
+          <label style={{fontWeight:600}}>Chip ID:</label><br/>
+          <input
+            value={chipId}
+            onChange={e => setChipId(e.target.value.replace(/[^a-zA-Z0-9]/g,''))}
+            required
+            maxLength={8}
+            style={{letterSpacing:1, width:100}}
+            placeholder="Alphanumeric, ≤8"
+          />
+        </div>
+        <div>
+          <label style={{fontWeight:600}}>Usage (kWh):</label><br/>
+          <input
+            value={usage}
+            onChange={e => setUsage(e.target.value.replace(/[^0-9.]/g,''))}
+            type="number"
+            required
+            min="0"
+            step="0.1"
+            style={{width:90}}
+            placeholder="Numeric"
+          />
+        </div>
+      </div>
+      <button className="btn" style={{marginTop:20, fontWeight:700, border:'1.5px solid #919191', color:'#fff'}}>Submit</button>
+      {errorPopup && <div style={{marginTop:10, color:'#800000', fontWeight:600}}>{errorPopup}</div>}
+    </form>
+  );
+}
+
 // ----- Customer: Dashboard -----
-function CustomerDashboard({ customer, usageRecord }) {
+function CustomerDashboard({ customer, usageRecord, previousDue, newBill }) {
   return (
     <div className="hero" style={{
       paddingTop: 36,
@@ -428,6 +500,21 @@ function CustomerDashboard({ customer, usageRecord }) {
       <div className="description" style={{
         minHeight: 55
       }}>
+        {typeof previousDue !== "undefined" && typeof newBill !== "undefined" ? (
+          <>
+            <div style={{fontWeight:600, fontSize:'1.09em', marginBottom:8}}>
+              <span>Previous Due: </span>
+              <span style={{color:'#800000', fontWeight:800}}>₹{previousDue}</span>
+            </div>
+            <div style={{fontWeight:600, fontSize:'1.09em', marginBottom:7}}>
+              <span>New Bill: </span>
+              <span style={{color:'#1A1A1A'}}>₹{newBill}</span>
+            </div>
+            <div style={{fontWeight:700, marginBottom:8}}>
+              <b>Total Outstanding:</b> <span style={{color:'#e87a41', fontWeight:800, fontSize:'1.12em'}}>₹{previousDue+newBill}</span>
+            </div>
+          </>
+        ) : null}
         {usageRecord
           ? (
             <>
