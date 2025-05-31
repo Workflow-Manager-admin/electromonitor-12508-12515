@@ -494,39 +494,74 @@ function App() {
         </div>
 
         {/* Officer Late Payment Section */}
-        <div className="panel" style={{
+        <div className="panel late-payment-card-officer" style={{
           background: '#fff',
-          border: '2.5px solid #caf0fe',
+          border: '2.5px solid #001f54', // Navy blue border
           marginBottom: 24,
+          fontWeight: 700, // Make the section a bit visually bolder
+          boxShadow: "0 2px 10px #001f5420",
         }}>
-          <div className="subtitle" style={{fontWeight: 700, color: "#000", marginBottom: 8, fontSize: "1.18rem"}}>
+          <div className="subtitle" style={{
+            fontWeight: 800,
+            color: "#001f54",
+            marginBottom: 8,
+            fontSize: "1.26rem",
+            letterSpacing: 0.03,
+          }}>
             Late Payment Records
           </div>
           {lateList.length === 0 ? (
             <div style={{color: '#919191', fontWeight: 500}}>No late payments at this time.</div>
           ) : (
-            <table style={{ width: '100%', fontSize: '1rem', borderCollapse: 'collapse', marginTop: 5 }}>
+            <table style={{
+              width: '100%',
+              fontSize: '1rem',
+              borderCollapse: 'collapse',
+              marginTop: 5,
+              fontWeight: 700,
+            }}>
               <thead>
-                <tr>
-                  <th style={{padding:6, background:'#919191', color:'#fff'}}>Customer</th>
-                  <th style={{padding:6, background:'#919191', color:'#fff'}}>Overdue Amount</th>
-                  <th style={{padding:6, background:'#919191', color:'#fff'}}>Due Date</th>
-                  <th style={{padding:6, background:'#919191', color:'#fff'}}>Overdue (days)</th>
-                  <th style={{padding:6, background:'#919191', color:'#fff'}}>Last Updated</th>
+                <tr style={{background:'#001f54'}}>
+                  <th style={{padding:6, background:'#001f54', color:'#fff', fontWeight:700}}>Customer</th>
+                  <th style={{padding:6, background:'#001f54', color:'#fff', fontWeight:700}}>Overdue Amount</th>
+                  <th style={{padding:6, background:'#001f54', color:'#fff', fontWeight:700}}>Due Date</th>
+                  <th style={{padding:6, background:'#001f54', color:'#fff', fontWeight:700}}>Overdue (days)</th>
+                  <th style={{padding:6, background:'#001f54', color:'#fff', fontWeight:700}}>Last Updated</th>
                 </tr>
               </thead>
               <tbody>
                 {lateList.map(entry => (
                   <tr key={entry.id}>
-                    <td style={{padding:6, fontWeight:600}}>{entry.name}</td>
-                    <td style={{padding:6, color:'#caf0fe', fontWeight: 700, fontSize: '1.07em'}}>
+                    <td style={{
+                      padding:6,
+                      fontWeight:900,
+                      color:'#800000', // Maroon
+                      fontSize: '1.08em',
+                      letterSpacing: 0.01,
+                      display:'flex',
+                      alignItems:'center',
+                      gap: '0.6em'
+                    }}>
+                      <span style={{fontSize:'1.1em', verticalAlign:'sub'}}>⚠️</span>
+                      {entry.name}
+                    </td>
+                    <td style={{
+                      padding:6,
+                      color:'#800000',
+                      fontWeight: 900,
+                      fontSize: '1.10em'
+                    }}>
                       ₹{entry.amount}
                     </td>
-                    <td style={{padding:6}}>{entry.dueDate}</td>
-                    <td style={{padding:6, color:'#e84545', fontWeight:700}}>
+                    <td style={{padding:6, color:'#800000', fontWeight:700}}>{entry.dueDate}</td>
+                    <td style={{padding:6, color:'#800000', fontWeight:900}}>
                       {entry.overdueDays}
                     </td>
-                    <td style={{padding:6, color:'#919191'}}>{entry.updatedAt}</td>
+                    <td style={{
+                      padding:6,
+                      color:'#555',
+                      fontWeight:600
+                    }}>{entry.updatedAt}</td>
                   </tr>
                 ))}
               </tbody>
